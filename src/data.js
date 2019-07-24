@@ -1,7 +1,4 @@
-import * as slidewhow from "./Slideshow.js";
-import * as swingDetector from "./SwingDetector.js";
-
-const sources = [
+export const sources = [
   "images/MEL_ANONYME_043712.jpg",
   "images/MEL_BOISSONAS_Frederic_001583_LoRes.jpg",
   "images/MEL_BOUVIER_Nicolas_028385_LoRes.jpg",
@@ -31,21 +28,3 @@ const sources = [
   "images/MEL_WEISS_sabine_010852_LoRes.jpg",
   "images/MEL_WOODS_Paolo_050855.jpg",
 ]
-
-function main() {
-  swingDetector.init(onValue);
-  slidewhow.init(sources);
-  document.addEventListener('click', slidewhow.next);
-}
-
-function onValue(e) {
-  // console.log(e.value);
-  if (e.apogee === 'back') {
-    slidewhow.next({ autoPlay: true });
-  }
-  
-  // console.log(e.absValue);
-  // if (slidewhow.transitionValue < e.absValue) slidewhow.setTransitionValue(e.absValue);
-}
-
-main();

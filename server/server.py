@@ -10,7 +10,7 @@ server = None
 def start():
   class SimpleWSServer(WebSocket):
       def handleConnected(self):
-          clients.append(self)
+        clients.append(self)
 
       def handleClose(self):
           clients.remove(self)
@@ -19,6 +19,7 @@ def start():
       global server
       server = SimpleWebSocketServer('', 9000, SimpleWSServer,
                                     selectInterval=(1000.0 / 15) / 1000)
+      print "Started server on port 9000"
       server.serveforever()
 
   t = threading.Thread(target=run_server)
