@@ -4,7 +4,7 @@ from scipy.signal import find_peaks
 
 cap = None
 
-def detect():
+def detect(config):
   ret, frame = cap.read()
   frame = cv2.flip(frame, 1)
 
@@ -42,7 +42,10 @@ def detect():
     cv2.line(display, (peak, 0), (peak, height), (255,0,0), 1)
 
   # Display
-  # cv2.imshow('frame', display)
+  if (config["display"]):
+    cv2.imshow('frame', display)
+  else:
+    cv2.destroyWindow('frame')
 
   # Only send if the peak count is 1
   if len(peaks == 1):
@@ -51,8 +54,11 @@ def detect():
     return None
 
 def init():
+  set_camera(0)
+
+def set_camera(camera_id):
   global cap
-  cap = cv2.VideoCapture(0)
+  cap = cv2.VideoCapture(camera_id)
 
 def stop():
   cap.release()

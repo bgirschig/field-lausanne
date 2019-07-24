@@ -2,6 +2,7 @@ import * as slidewhow from "./Slideshow.js";
 import SwingDetector from "./SwingDetector.js";
 import * as data from "./data.js";
 import * as dat from 'dat.gui';
+import './main.css';
 
 let gui;
 let swingDetector;
@@ -15,7 +16,11 @@ async function main() {
   cameras.forEach((label, idx) => cameraMap[label] = idx);
 
   gui = new dat.GUI();
-  gui.add(swingDetector, 'camera', cameraMap);
+  const detectorControls = gui.addFolder('detector');
+  detectorControls.open();
+  detectorControls.add(swingDetector, 'active');
+  detectorControls.add(swingDetector, 'display');
+  detectorControls.add(swingDetector, 'camera', cameraMap);
   gui.remember(swingDetector);
 }
 
@@ -24,8 +29,7 @@ function onValue(e) {
   if (e.apogee === 'back') {
     slidewhow.next({ autoPlay: true });
   }
-  
-  // console.log(e.absValue);
+
   // if (slidewhow.transitionValue < e.absValue) slidewhow.setTransitionValue(e.absValue);
 }
 

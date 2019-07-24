@@ -21,10 +21,15 @@ export function next({ autoPlay = true } = {}) {
     newItem.onload = () => {
       setTimeout(()=>newItem.style.setProperty('--ellipse-size', `${diagonal}px`), 100);
     }
-    setTimeout(()=>slideshowWrapper.removeChild(slideshowWrapper.firstChild), transitionDuration*1000);
+    setTimeout(()=> {
+      if (slideshowWrapper.childCount > 1) {
+        slideshowWrapper.removeChild(slideshowWrapper.firstChild);
+      }
+    }, transitionDuration*1000);
   }
-
+  
   slideshowWrapper.appendChild(newItem);
+
   sourceIdx = (sourceIdx + 1) % sources.length;
 }
 

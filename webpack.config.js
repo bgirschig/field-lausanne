@@ -13,8 +13,15 @@ module.exports = {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,
     port: 8000,
-    host: '0.0.0.0',
-    useLocalIp: true,
+    host: 'localhost',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
   },
   plugins: [new HtmlWebpackPlugin({ template: 'index.html' })]
 };
