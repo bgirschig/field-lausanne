@@ -74,9 +74,11 @@ t.start()
 # OpenCV loop
 while True:
   try:
-    value = detector.detect(config)
+    value, display = detector.detect(config)
     if value:
-      send({'type': 'detectorValue', 'value': value})
+      send({'type': 'detectorValue', 'value': value })
+    if display:
+      send({'type': 'detectorDisplay', 'value': display })
   except KeyboardInterrupt:
     server.close()
     detector.stop()

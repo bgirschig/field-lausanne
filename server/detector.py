@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from scipy.signal import find_peaks
+import base64
 
 cap = None
 
@@ -41,17 +42,15 @@ def detect(config):
   for peak in peaks:
     cv2.line(display, (peak, 0), (peak, height), (255,0,0), 1)
 
-  # Display
-  if (config["display"]):
-    cv2.imshow('frame', display)
-  else:
-    cv2.destroyWindow('frame')
-
   # Only send if the peak count is 1
+  peak = None
+  outputImg = None
   if len(peaks == 1):
-    return peaks[0] / float(width) - 0.5
-  else:
-    return None
+    peak = peaks[0] / float(width) - 0.5
+  if config["display"]:
+    retval, buffer = cv2.imencode('.jpg', display)
+    outputImg = base64.b64encode(buffer)
+  return peak, outputImg
 
 def init():
   set_camera(0)

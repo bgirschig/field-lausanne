@@ -28,6 +28,7 @@ export default class SwingDetector {
     this.ws.onmessage = (evt) => {
       const { type, value } = JSON.parse(evt.data);
       if (type === 'detectorValue') this.handleValue(value);
+      if (type === 'detectorDisplay') this.handleDisplay(value);
       else if (type === 'config') console.log('new config: ', value);
     }
   }
@@ -42,9 +43,14 @@ export default class SwingDetector {
     this.ws.send(JSON.stringify(data));
   }
 
+  handleDisplay(display) {
+    document.querySelector('img.view').src = `data:image/jpeg;base64,${display}`;
+  }
+
   handleValue(value) {
     if (!this.active) return;
     if (this.swap) value = -value;
+    
     value = value - this.offset;
 
     const now = performance.now();
@@ -116,6 +122,7 @@ export default class SwingDetector {
   }
   set display(value) {
     this._display = value;
+    document.querySelector('img.view').style.display = value ? '' : 'none';
     this.updateConfig({ 'display': value });
   }
 

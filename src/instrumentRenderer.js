@@ -1,4 +1,4 @@
-const canvas = document.querySelector('canvas.instrument');
+const canvas = document.querySelector('.instruments canvas.dials');
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvas.getContext("2d");
 

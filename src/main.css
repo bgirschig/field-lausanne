@@ -4,7 +4,7 @@ html, body {
   background-color: black;
 }
 
-img {
+.slidewhow img {
   position: absolute;
   top: 0;
   left: 0;
@@ -28,9 +28,15 @@ img {
   right: 10px;
 }
 
-.instrument {
+.dials {
   background-color: rgba(30, 30, 30, 0.6);
   position: absolute;
   top: 0;
   left: 10px;
+}
+.instruments .view {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100vw;
 }
