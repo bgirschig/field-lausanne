@@ -19,7 +19,10 @@ export function next({ autoPlay = true } = {}) {
     // const transitionDuration = (parseFloat(getComputedStyle(slideshowWrapper.firstElementChild)['transitionDuration']));
     const transitionDuration = 0.8;
     newItem.onload = () => {
-      setTimeout(()=>newItem.style.setProperty('--ellipse-size', `${diagonal}px`), 100);
+      setTimeout(()=> {
+        newItem.style.setProperty('--ellipse-size', `${diagonal}px`);
+        slideshowWrapper.lastChild.style.transform = "scale(1.2, 1.2)";
+      }, 100);
     }
     setTimeout(()=> {
       if (slideshowWrapper.childCount > 1) {

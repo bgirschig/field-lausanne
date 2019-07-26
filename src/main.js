@@ -12,6 +12,10 @@ async function main() {
   swingDetector = new SwingDetector(onValue);
   slidewhow.init(data.sources);
   
+  document.body.addEventListener('keyup', e => {
+    if (e.key === 'n') slidewhow.next();
+  });
+
   const cameras = await swingDetector.getCameraList();
   const cameraMap = {};
   cameras.forEach((label, idx) => cameraMap[label] = idx);
