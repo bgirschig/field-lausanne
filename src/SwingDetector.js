@@ -9,7 +9,7 @@ export default class SwingDetector {
   constructor(onValue) {
     this._camera = 0;
     this.valueHistory = new RollingArray(10);
-    this.speedHistory = new RollingArray(10);
+    this.speedHistory = new RollingArray(3);
     this.apogeeSpeedTreshold = 0.1;
     this.inertRange = 0.15;
     this.resetRange = 0.1;
