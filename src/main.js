@@ -22,15 +22,17 @@ async function main() {
   gui.remember(swingDetector);
   gui.remember(instrumentRenderer);
   const detectorControls = gui.addFolder('detector');
+  const analysisControls = gui.addFolder('analysis');
   detectorControls.open();
-  detectorControls.add(swingDetector, 'active');
-  detectorControls.add(swingDetector, 'display');
-  detectorControls.add(swingDetector, 'swap');
+  analysisControls.open();
   detectorControls.add(swingDetector, 'camera', cameraMap);
-  detectorControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.2).onChange(onControlChange);
-  detectorControls.add(swingDetector, 'inertRange', 0, 0.5).onChange(onControlChange);
-  detectorControls.add(swingDetector, 'resetRange', 0, 0.3).onChange(onControlChange);
-  detectorControls.add(swingDetector, 'offset', -1.0, 1.0).onChange(onControlChange);
+  detectorControls.add(swingDetector, 'display');
+  analysisControls.add(swingDetector, 'active');
+  analysisControls.add(swingDetector, 'swap');
+  analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.2).onChange(onControlChange);
+  analysisControls.add(swingDetector, 'inertRange', 0, 0.5).onChange(onControlChange);
+  analysisControls.add(swingDetector, 'resetRange', 0, 0.3).onChange(onControlChange);
+  analysisControls.add(swingDetector, 'offset', -1.0, 1.0).onChange(onControlChange);
   gui.add(instrumentRenderer, 'active').name('Show Instrument');
 
   onControlChange();
