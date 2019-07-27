@@ -90,6 +90,13 @@ export default class SwingDetector {
     // Ignore anything inside the inert range
     const isApogeeRange = absValue > this.inertRange && this.prevApogee != side;
     const isApogeeSpeed = Math.abs(speed) > this.apogeeSpeedTreshold && direction === side;
+    const isResetRange = absValue < this.resetRange;
+
+    if (isApogeeRange) {
+      // Reset if we're on the other side, far enough
+      this.prevApogee = null;
+      this.prevApogeeValue = null;
+    }
     if (isApogeeRange && isApogeeSpeed) {
       this.prevApogee = side;
       this.prevApogeeValue = value;
@@ -97,7 +104,7 @@ export default class SwingDetector {
     }
     
     // Reset when sitting in the inert range for a while
-    if (absValue < this.resetRange) {
+    if (isResetRange) {
       if (!this.resetStart) this.resetStart = now;
       if (now - this.resetStart > RESET_DELAY) {
         this.prevApogee = null;
