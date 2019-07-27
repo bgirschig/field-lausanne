@@ -18,7 +18,7 @@ def detect(config):
   # Discard some of the image: faster processing, and prevents detecting stuff
   # in the background
   minX = int(config['zone']['minX'] * width)
-  maxX = int(config['zone']['maxX'] * height)
+  maxX = int(config['zone']['maxX'] * width)
   focusHeight = config['zone']['height']
   focusY = height * config['zone']['y']
   if (minX > maxX): minX, maxX = maxX, minX
@@ -53,7 +53,7 @@ def detect(config):
   display[0:50,:] = baseData[:,np.newaxis]
   display[50:100, baseData > treshold] = 255
   for peak in peaks:
-    cv2.line(display, (peak, 0), (peak, height), (255,0,0), 1)
+    cv2.line(display, (peak, 0), (peak, 100), (255,0,0), 1)
 
   # Only send if the peak count is 1
   peak = None
