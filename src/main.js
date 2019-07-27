@@ -38,7 +38,7 @@ async function main() {
   detectorZoneControls.add(swingDetector.zone, 'height', 1, 50);
   analysisControls.add(swingDetector, 'active');
   analysisControls.add(swingDetector, 'swap');
-  analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.2).onChange(onControlChange);
+  analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.05).onChange(onControlChange);
   analysisControls.add(swingDetector, 'inertRange', 0, 0.5).onChange(onControlChange);
   analysisControls.add(swingDetector, 'resetRange', 0, 0.3).onChange(onControlChange);
   analysisControls.add(swingDetector, 'offset', -1.0, 1.0).onChange(onControlChange);
