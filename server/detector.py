@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from scipy.signal import find_peaks
 import base64
+import math
 
 cap = None
 
@@ -16,7 +17,17 @@ def detect(config):
 
   # Discard some of the image: faster processing, and prevents detecting stuff
   # in the background
-  focus = frame[height//2-5:height//2+5]
+  minX = int(config['zone']['minX'] * width)
+  maxX = int(config['zone']['maxX'] * height)
+  focusHeight = config['zone']['height']
+  focusY = height * config['zone']['y']
+  if (minX > maxX): minX, maxX = maxX, minX
+  if (focusY < focusHeight/2): focusY = math.ceil(focusHeight/2)
+  if (focusY > height-focusHeight/2): focusY = math.floor(height-focusHeight/2)
+  minY = int(focusY - focusHeight/2)
+  maxY = int(focusY + focusHeight/2)
+  focus = frame[minY:maxY,minX:maxX]
+  height, width, _ = focus.shape
   focus = cv2.cvtColor(focus, cv2.COLOR_BGR2GRAY)
 
   # We need a 1d array of values for processing. The focus area is a rectangle,

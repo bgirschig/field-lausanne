@@ -13,6 +13,12 @@ clients = []
 config = {
   'camera': 0,
   'display': False,
+  'zone': {
+    'minX': 0,
+    'maxX': 1,
+    'y': 0.5,
+    'height': 10,
+  }
 }
 
 """

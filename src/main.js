@@ -26,11 +26,16 @@ async function main() {
   gui.remember(swingDetector);
   gui.remember(instrumentRenderer);
   const detectorControls = gui.addFolder('detector');
+  const detectorZoneControls = detectorControls.addFolder('zone');
   const analysisControls = gui.addFolder('analysis');
   detectorControls.open();
   analysisControls.open();
   detectorControls.add(swingDetector, 'camera', cameraMap);
   detectorControls.add(swingDetector, 'display');
+  detectorZoneControls.add(swingDetector.zone, 'minX', 0, 1);
+  detectorZoneControls.add(swingDetector.zone, 'maxX', 0, 1);
+  detectorZoneControls.add(swingDetector.zone, 'y', 0, 1);
+  detectorZoneControls.add(swingDetector.zone, 'height', 1, 50);
   analysisControls.add(swingDetector, 'active');
   analysisControls.add(swingDetector, 'swap');
   analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.2).onChange(onControlChange);

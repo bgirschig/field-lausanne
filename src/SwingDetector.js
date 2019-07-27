@@ -1,4 +1,5 @@
 import RollingArray from "./rollingArray";
+import WatchableObject from "./watchableObject";
 
 const RESET_DELAY = 500;
 // How many frames to wait before confirming an apogee
@@ -8,6 +9,7 @@ const DEBOUNCE_COUNT = 3;
 export default class SwingDetector {
   constructor(onValue) {
     this._camera = 0;
+    this.zone = new WatchableObject({minX: 0, maxX: 1, height: 10, y: 0.5}, this.onZoneChange.bind(this));
     this.valueHistory = new RollingArray(10);
     this.speedHistory = new RollingArray(3);
     this.apogeeSpeedTreshold = 0.1;
@@ -29,7 +31,6 @@ export default class SwingDetector {
       const { type, value } = JSON.parse(evt.data);
       if (type === 'detectorValue') this.handleValue(value);
       if (type === 'detectorDisplay') this.handleDisplay(value);
-      else if (type === 'config') console.log('new config: ', value);
     }
   }
 
@@ -45,6 +46,10 @@ export default class SwingDetector {
 
   handleDisplay(display) {
     document.querySelector('img.view').src = `data:image/jpeg;base64,${display}`;
+  }
+
+  onZoneChange(newZone) {
+    this.updateConfig({zone: newZone});
   }
 
   handleValue(value) {
@@ -129,6 +134,12 @@ export default class SwingDetector {
     this._display = value;
     document.querySelector('img.view').style.display = value ? '' : 'none';
     this.updateConfig({ 'display': value });
+  }
+  get zone() {
+    return this._zone;
+  }
+  set zone(value) {
+    this._zone = value;
   }
 
   async getCameraList() {
