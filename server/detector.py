@@ -7,6 +7,8 @@ cap = None
 
 def detect(config):
   ret, frame = cap.read()
+  if (frame is None): return None, None
+
   frame = cv2.flip(frame, 1)
 
   # extract frame height
