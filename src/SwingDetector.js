@@ -75,29 +75,34 @@ export default class SwingDetector {
       deltaTime,
       speed,
       apogee: null,
+      prevApogee: null,
       side: sideLabel,
       smoothedValue,
       smoothedSpeed,
     };
     
-    // Detect apogees v2
+    // Detect apogees
     // Ignore anything inside the inert range
-    if (absValue > this.inertRange && this.prevApogee != side) {
-      const isApogee = Math.abs(speed) > this.apogeeSpeedTreshold && direction === side;
-      if (isApogee) {
-        this.prevApogee = side;
-        output.apogee = sideLabel;
-        console.log('apogee: ', sideLabel);
-      }
+    const isApogeeRange = absValue > this.inertRange && this.prevApogee != side;
+    const isApogeeSpeed = Math.abs(speed) > this.apogeeSpeedTreshold && direction === side;
+    if (isApogeeRange && isApogeeSpeed) {
+      this.prevApogee = side;
+      this.prevApogeeValue = value;
+      output.apogee = sideLabel;
     }
     
     // Reset when sitting in the inert range for a while
     if (absValue < this.resetRange) {
       if (!this.resetStart) this.resetStart = now;
-      if (now - this.resetStart > RESET_DELAY) this.prevApogee = null;
+      if (now - this.resetStart > RESET_DELAY) {
+        this.prevApogee = null;
+        this.prevApogeeValue = null;
+      }
     } else {
       this.resetStart = null;
     }
+    
+    output.prevApogeeValue = this.prevApogeeValue;
     
     this.onValue(output);
 
