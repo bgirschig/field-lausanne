@@ -64,12 +64,12 @@ export default class SwingDetector {
 
     this.valueHistory.append(value);
 
-    const speed = (this.prevValue - value) / deltaTime;
+    const smoothedValue = this.valueHistory.average;
+    const speed = (this.prevValue - smoothedValue) / deltaTime;
     const direction = Math.sign(speed);
     const absValue = Math.abs(value);
     const side = Math.sign(value);
     const sideLabel = side === -1 ? 'front' : 'back';
-    const smoothedValue = this.valueHistory.average;
     
     this.speedHistory.append(speed);
     const smoothedSpeed = this.speedHistory.average;
@@ -89,7 +89,7 @@ export default class SwingDetector {
     // Detect apogees
     // Ignore anything inside the inert range
     const isApogeeRange = absValue > this.inertRange && this.prevApogee != side;
-    const isApogeeSpeed = Math.abs(speed) > this.apogeeSpeedTreshold && direction === side;
+    const isApogeeSpeed = Math.abs(smoothedSpeed) > this.apogeeSpeedTreshold && direction === side;
     const isResetRange = absValue < this.resetRange;
 
     if (isApogeeRange) {
