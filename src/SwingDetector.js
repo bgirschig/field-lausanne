@@ -1,5 +1,6 @@
 import RollingArray from "./rollingArray";
 import WatchableObject from "./watchableObject";
+import { download, toFloatStr } from "./utils";
 
 const RESET_DELAY = 500;
 // How many frames to wait before confirming an apogee
@@ -23,6 +24,10 @@ export default class SwingDetector {
     this.resetStart;
     this.swap = true;
     this.offset = 0;
+
+    this.recording = '';
+    this.recordingName = 'swing_values.csv';
+    this.record = false;
 
     this.onValue = onValue;
     
@@ -55,13 +60,20 @@ export default class SwingDetector {
   handleValue(value) {
     if (!this.active) return;
     if (this.swap) value = -value;
-    
-    value = value - this.offset;
 
     const now = performance.now();
     const deltaTime = now - this.prevTime;
     this.prevTime = now;
-
+    if (this.record) {
+      if (!this.recordStartTime) this.recordStartTime = now;
+      const time = now - this.recordStartTime;
+      this.recording += `${toFloatStr(time)},${toFloatStr(value)}\n`;
+    } else if (this.recordStartTime) {
+      this.recording = '';
+      this.recordStartTime = null;
+    }
+    
+    value = value - this.offset;
     this.valueHistory.append(value);
 
     const smoothedValue = this.valueHistory.average;
@@ -120,6 +132,11 @@ export default class SwingDetector {
 
     this.prevDirection = direction;
     this.prevValue = smoothedValue;
+  }
+
+  downloadRecording() {
+    download(this.recordingName, this.recording, 'text/csv');
+    this.record = false;
   }
 
   updateConfig(data) {
