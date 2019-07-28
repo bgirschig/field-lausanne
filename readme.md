@@ -20,3 +20,4 @@ Starfield project adaptation for musée de l'élysée: a Swing-controlled Slides
   and trigger apogee as soon as speed gets over treshold
   - Predictive system: estimate next time from speed & previous values for faster
   response
+- Move processing to server or 2nd thread

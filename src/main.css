@@ -14,7 +14,7 @@ html, body {
   object-fit: contain;
   object-position: center;
 
-  transition: clip-path 0.8s, transform 1s;
+  transition: clip-path 0.8s, transform 3s;
   --ellipse-size: 0px;
   clip-path: ellipse(var(--ellipse-size) var(--ellipse-size) at 50vw 50vh);
   transform: scale(1, 1);

@@ -46,7 +46,7 @@ function render() {
   drawDial();
 
   // Speed instruments
-  const speedScale = 6;
+  const speedScale = 3;
   ctx.translate(0, height-20);
   ctx.scale(1, -1);
   drawZone(-state.apogeeSpeedTreshold*speedScale, state.apogeeSpeedTreshold*speedScale, 'green');

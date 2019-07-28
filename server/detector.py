@@ -53,7 +53,7 @@ def detect(config):
   display[0:50,:] = baseData[:,np.newaxis]
   display[50:100, baseData > treshold] = 255
   for peak in peaks:
-    cv2.line(display, (peak, 0), (peak, 100), (255,0,0), 1)
+    cv2.line(display, (peak, 0), (peak, 100), (0,0,255), 3)
 
   # Only send if the peak count is 1
   peak = None
