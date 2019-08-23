@@ -44,9 +44,9 @@ def receive(data):
   action = data["action"]
   payload = data["payload"]
   if (action == 'updateConfig'):
-    # Custom config properties
-    if 'camera' in payload:
-      detector.set_camera(payload['camera'])
+    # # Custom config properties
+    # if 'camera' in payload:
+    #   detector.set_camera(payload['camera'])
     # Generic config dict
     for key in payload:
       config[key] = payload[key]

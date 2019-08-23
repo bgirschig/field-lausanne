@@ -8,7 +8,10 @@ cap = None
 
 def detect(config):
   ret, frame = cap.read()
-  if (frame is None): return None, None
+  if (frame is None):
+    # loop if cap is a video
+    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+    return None, None
 
   frame = cv2.flip(frame, 1)
 
@@ -66,7 +69,8 @@ def detect(config):
   return peak, outputImg
 
 def init():
-  set_camera(0)
+  # set_camera(0)
+  set_camera('recordings/swing.mov')
 
 def set_camera(camera_id):
   global cap
