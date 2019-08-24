@@ -16,7 +16,7 @@ export default class SwingDetector {
     this.apogeeSpeedTreshold = 0.1;
     this.inertRange = 0.15;
     this.resetRange = 0.1;
-    this.prevValue = null;
+    this.prevValue = 0;
     this.prevTime = null;
     this.prevDirection = 0;
     this.currentDirection = 1;
@@ -37,6 +37,8 @@ export default class SwingDetector {
       if (type === 'detectorValue') this.handleValue(value);
       if (type === 'detectorDisplay') this.handleDisplay(value);
     }
+
+    this.loop();
   }
 
   waitConnection() {
@@ -57,81 +59,43 @@ export default class SwingDetector {
     this.updateConfig({zone: newZone});
   }
 
-  handleValue(value) {
+  loop() {
+    requestAnimationFrame(this.loop.bind(this));
+    
     if (!this.active) return;
-    if (this.swap) value = -value;
+    this.valueHistory.append(this.latestValue);
+    const smoothedValue = this.valueHistory.average;
 
     const now = performance.now();
+    // 
     const deltaTime = now - this.prevTime;
+    const delta = smoothedValue - this.prevValue;
+    // 
+    this.prevValue = smoothedValue;
     this.prevTime = now;
-    if (this.record) {
-      if (!this.recordStartTime) this.recordStartTime = now;
-      const time = now - this.recordStartTime;
-      this.recording += `${toFloatStr(time)},${toFloatStr(value)}\n`;
-    } else if (this.recordStartTime) {
-      this.recording = '';
-      this.recordStartTime = null;
-    }
-    
-    value = value - this.offset;
-    this.valueHistory.append(value);
 
-    const smoothedValue = this.valueHistory.average;
-    const speed = (this.prevValue - smoothedValue) / deltaTime;
-    const direction = Math.sign(speed);
-    const absValue = Math.abs(value);
-    const side = Math.sign(value);
-    const sideLabel = side === -1 ? 'front' : 'back';
-    
+    const speed = delta / deltaTime;
     this.speedHistory.append(speed);
     const smoothedSpeed = this.speedHistory.average;
 
     const output = {
-      value,
-      absValue,
+      value: this.latestValue,
       deltaTime,
       speed,
-      apogee: null,
-      prevApogee: null,
-      side: sideLabel,
       smoothedValue,
       smoothedSpeed,
     };
-    
-    // Detect apogees
-    // Ignore anything inside the inert range
-    const isApogeeRange = absValue > this.inertRange && this.prevApogee != side;
-    const isApogeeSpeed = Math.abs(smoothedSpeed) > this.apogeeSpeedTreshold && direction === side;
-    const isResetRange = absValue < this.resetRange;
 
-    if (isApogeeRange) {
-      // Reset if we're on the other side, far enough
-      this.prevApogee = null;
-      this.prevApogeeValue = null;
-    }
-    if (isApogeeRange && isApogeeSpeed) {
-      this.prevApogee = side;
-      this.prevApogeeValue = value;
-      output.apogee = sideLabel;
-    }
-    
-    // Reset when sitting in the inert range for a while
-    if (isResetRange) {
-      if (!this.resetStart) this.resetStart = now;
-      if (now - this.resetStart > RESET_DELAY) {
-        this.prevApogee = null;
-        this.prevApogeeValue = null;
-      }
-    } else {
-      this.resetStart = null;
-    }
-    
-    output.prevApogeeValue = this.prevApogeeValue;
-    
+    // console.log(output);
     this.onValue(output);
+  }
 
-    this.prevDirection = direction;
-    this.prevValue = smoothedValue;
+  handleValue(value) {
+    if (!this.active) return;
+    if (this.swap) value = -value;
+    
+    value = value - this.offset;
+    this.latestValue = value;
   }
 
   downloadRecording() {

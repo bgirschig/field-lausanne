@@ -44,7 +44,7 @@ async function main() {
   recordControls.add(swingDetector, 'downloadRecording');
   analysisControls.add(swingDetector, 'active');
   analysisControls.add(swingDetector, 'swap');
-  analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.08).onChange(onControlChange);
+  analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.008).onChange(onControlChange);
   analysisControls.add(swingDetector, 'inertRange', 0, 0.5).onChange(onControlChange);
   analysisControls.add(swingDetector, 'resetRange', 0, 0.3).onChange(onControlChange);
   analysisControls.add(swingDetector, 'offset', -1.0, 1.0).onChange(onControlChange);

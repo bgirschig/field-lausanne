@@ -41,16 +41,16 @@ function render() {
   drawZone(-state.inertRange, state.inertRange, 'green');
   drawZone(-state.resetRange, state.resetRange, 'orange');
   drawNeedle(state.smoothedValue, 'red');
-  drawNeedle(state.value);
+  // drawNeedle(state.value);
   if (state.prevApogeeValue) drawNeedle(state.prevApogeeValue, 'yellow');
   drawDial();
 
   // Speed instruments
-  const speedScale = 3;
+  const speedScale = 50;
   ctx.translate(0, height-20);
   ctx.scale(1, -1);
   drawZone(-state.apogeeSpeedTreshold*speedScale, state.apogeeSpeedTreshold*speedScale, 'green');
-  drawNeedle(state.speed*speedScale, 'white');
+  // drawNeedle(state.speed*speedScale, 'white');
   drawNeedle(state.smoothedSpeed*speedScale, 'red');
   drawDial();
 
