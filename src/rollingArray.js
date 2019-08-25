@@ -25,6 +25,10 @@ export default class RollingArray {
   get sum() {
     return this.data.reduce((a,b) => a + b, 0);
   }
+
+  toString() {
+    return this.data.join(', ');
+  }
 }
 
 // const t = new RollingArray();

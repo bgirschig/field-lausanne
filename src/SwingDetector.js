@@ -15,6 +15,7 @@ export default class SwingDetector {
     // Values are smoothed over a few frames (using the average of the last x frames)
     this.valueHistory = new RollingArray(10);
     this.speedHistory = new RollingArray(3);
+    this.latestValue = 0;
     // analysis parameters
     this.apogeeSpeedTreshold = 0.1;
     this.inertRange = 0.15;

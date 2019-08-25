@@ -12,5 +12,35 @@
     <canvas class="dials"></canvas>
     <img class="view">
   </div>
+  <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    varying vec2 screenPos;
+    void main()	{
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+      screenPos = gl_Position.xy;
+    }
+  </script>
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    varying vec2 vUv;
+    varying vec2 screenPos;
+    uniform float transition;
+    uniform float aspect;
+    uniform sampler2D map;
+
+    void main()	{
+      gl_FragColor = texture2D( map, vUv );
+
+      float x = screenPos.x * aspect;
+      float y = screenPos.y;
+
+      float dist = sqrt(x*x + y*y);
+      float diag = sqrt(1.0 + aspect*aspect);
+      float mask = 1.0 - smoothstep(transition-0.01, transition+0.01, dist / diag);      
+      gl_FragColor.a = mask;
+
+      // gl_FragColor = vec4(screenPos.x * 0.5 + 0.5, screenPos.y * 0.5 + 0.5, 0.0, 1.0);
+    }
+  </script>
 </body>
 </html>

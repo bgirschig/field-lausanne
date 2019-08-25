@@ -1,0 +1,9 @@
+// This shader snippet may be useful for implementing 'contain' image mode
+
+vec2 pos = vec2(
+  (vUv.x * 2.0 - 1.0) * max(aspect, 1.0),
+  (vUv.y * 2.0 - 1.0) / min(aspect, 1.0)
+);
+float dist = sqrt(pos.x*pos.x + pos.y*pos.y);
+float diag = sqrt(1.0 + (aspect * aspect));
+float mask = 1.0 - smoothstep(transition-0.02, transition+0.02, dist / diag);
