@@ -36,3 +36,12 @@ export function shuffle(array) {
   }
   return array;
 }
+
+export function clamp (val, min=0, max=1) {
+  return Math.min(Math.max(val, min), max);
+}
+
+export function smoothStep(edge0, edge1, x) {
+  const t = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);
+  return t * t * (3.0 - 2.0 * t);
+}

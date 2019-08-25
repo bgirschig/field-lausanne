@@ -26,10 +26,15 @@
     varying vec2 screenPos;
     uniform float transition;
     uniform float aspect;
+    uniform float scale;
     uniform sampler2D map;
 
     void main()	{
-      gl_FragColor = texture2D( map, vUv );
+      vec2 scaledUv = vec2(
+        vUv.x / scale + (scale - 1.0) / (2.0 * scale),
+        vUv.y / scale + (scale - 1.0) / (2.0 * scale)
+      );
+      gl_FragColor = texture2D( map, scaledUv );
 
       float x = screenPos.x * aspect;
       float y = screenPos.y;

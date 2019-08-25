@@ -1,4 +1,7 @@
 import * as THREE from 'three';
+import { clamp, smoothStep } from './utils.js'
+
+const maxScale = 1.5;
 
 export default class SlideshowImage extends THREE.Mesh {
   constructor(src, { fit = 'cover' } = {}) {
@@ -10,6 +13,7 @@ export default class SlideshowImage extends THREE.Mesh {
         map: { type: 't', value: 0 },
         transition: { value: 0 },
         aspect: { value: 1.0 },
+        scale: { value: 1.0 },
       },
       vertexShader: document.getElementById( 'vertexShader' ).textContent,
       fragmentShader: document.getElementById( 'fragmentShader' ).textContent,
@@ -26,6 +30,8 @@ export default class SlideshowImage extends THREE.Mesh {
     this.src = src;
     this.needsRender = false;
     this.transition = 0;
+    this.scaleAnimPos = 0;
+    this.textureScale = 1.0;
   }
 
   onload(e) {
@@ -55,8 +61,8 @@ export default class SlideshowImage extends THREE.Mesh {
   }
 
   set transition(value) {
-    value = Math.min(1, Math.max(value, 0));
-    if (value !== this.material.uniforms.transition.value) this.needsRender = true;
+    value = clamp(value);
+    if (value !== this.transition) this.needsRender = true;
     this.material.uniforms.transition.value = value;
     this.material.uniforms.transition.needsUpdate = true;
   }
@@ -64,6 +70,19 @@ export default class SlideshowImage extends THREE.Mesh {
     return this.material.uniforms.transition.value;
   }
 
+  set textureScale(value) {
+    value = clamp(value, 0, maxScale);
+    if (value !== this.textureScale) this.needsRender = true;
+    this.material.uniforms.scale.value = value;
+  }
+  get textureScale() {
+    return this.material.uniforms.scale.value;
+  }
+
   update() {
+    this.scaleAnimPos += 0.001;
+    if (this.scaleAnimPos <= 1) {
+      this.textureScale = 1 + smoothStep(0, 1, this.scaleAnimPos);
+    }
   }
 }

@@ -31,7 +31,6 @@ export function load(src) {
 export function unloadOldest(keepOne = true) {
   if (keepOne && images.length <= 1) return;
   if (images.length === 0) return;
-  console.log(images.length, scene.children.length);
   scene.remove(images[0]);
   images = images.slice(1);
 }
@@ -45,6 +44,7 @@ function loop() {
     image.needsRender = false;
   });
   if (needsRender) {
+    // console.log('render');
     renderer.render( scene, camera );
   }
 }
