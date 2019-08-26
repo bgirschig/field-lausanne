@@ -6,9 +6,8 @@ const maxScale = 1.5;
 export default class SlideshowImage extends THREE.Mesh {
   constructor(src, { fit = 'cover' } = {}) {
     const geometry = new THREE.PlaneGeometry( 1, 1 );
-    const material = new THREE.MeshBasicMaterial( );
     
-    const material2 = new THREE.ShaderMaterial({
+    const material = new THREE.ShaderMaterial({
       uniforms: {
         map: { type: 't', value: 0 },
         transition: { value: 0 },
@@ -20,15 +19,16 @@ export default class SlideshowImage extends THREE.Mesh {
       transparent: true,
     });
 
-    super( geometry, material2 );
+    super( geometry, material );
     
     const texture = new THREE.TextureLoader().load(src, this.onload.bind(this));
-    material2.uniforms.map.value = texture;
-    material.map = texture;
-
+    material.uniforms.map.value = texture;
     this.fit = fit;
-    this.src = src;
     this.needsRender = false;
+    this.reset();
+  }
+
+  reset() {
     this.transition = 0;
     this.scaleAnimPos = 0;
     this.textureScale = 1.0;

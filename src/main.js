@@ -13,8 +13,8 @@ let sessionIdx = 0;
 
 async function main() {
   swingDetector = new SwingDetector(onValue);
-  scene.load(sources[1][0]);
-  scene.lastImage.transition = 0.99;
+  scene.cache(sessionSources);
+  scene.load(sessionSources[sessionIdx++]);
 
   await swingDetector.waitConnection();
   gui(swingDetector, instrumentRenderer);

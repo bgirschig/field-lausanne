@@ -7,6 +7,7 @@ const FAR = 100;
 
 // state
 let images = [];
+let imagesCache = {};
 
 // unloadOldest
 let scene = new THREE.Scene();
@@ -17,10 +18,23 @@ scene.background = new THREE.Color( 0x999 );
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-export function load(src) {
-  const img = new SlideshowImage( src, { fit: 'cover'} );
-  images.push( img );
-  scene.add(img);
+function cache(images, clear=false) {
+  if (clear) imagesCache = {};
+  if (!Array.isArray(images)) images = [images];
+  images.forEach(img => {
+    if (!imagesCache[img]) imagesCache[img] = new SlideshowImage( img, { fit: 'cover'} );
+  });
+}
+
+function load(img) {
+  // make sure this img is in the cache
+  cache(img);
+  
+  // load up the image object
+  const imageObject = imagesCache[img];
+  imageObject.reset();
+  images.push( imageObject );
+  scene.add(imageObject);
   
   // sort images in the order of the array
   images.forEach((item, idx) => item.position.z = - (images.length - idx));
@@ -28,7 +42,7 @@ export function load(src) {
   renderer.render( scene, camera );
 }
 
-export function unloadOldest(keepOne = true) {
+function unloadOldest(keepOne = true) {
   if (keepOne && images.length <= 1) return;
   if (images.length === 0) return;
   scene.remove(images[0]);
@@ -51,7 +65,7 @@ function loop() {
 loop();
 
 export default {
-  load, unloadOldest,
+  load, cache, unloadOldest,
   get images() {
     return images;  
   },
