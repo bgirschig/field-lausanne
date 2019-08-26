@@ -74,8 +74,9 @@ def run_server():
 
 # Start the socket server thread
 detector.init()
-t = threading.Thread(target=run_server)
-t.start()
+socket_thread = threading.Thread(target=run_server)
+socket_thread.daemon = True
+socket_thread.start()
 
 # OpenCV loop
 while True:
@@ -86,11 +87,9 @@ while True:
     if display:
       send({'type': 'detectorDisplay', 'value': display })
   except KeyboardInterrupt:
-    server.close()
     detector.stop()
     break
   
   cv2.waitKey(1)
 
 detector.stop()
-server.close()
