@@ -72,6 +72,9 @@ export default {
   get lastImage() {
     return images[images.length -1];
   },
+  get empty() {
+    return images.length === 0;
+  },
   get test() {
     if (this.lastImage) return this.lastImage.transition;
     return 0;

@@ -1,10 +1,10 @@
-import RollingArray from "./rollingArray";
-import WatchableObject from "./watchableObject";
-import { download, toFloatStr } from "./utils";
+import RollingArray from "./utils/rollingArray";
+import WatchableObject from "./utils/watchableObject";
+import { download, millis, MILLIS_PER_MINUTE } from "./utils/utils";
 
-const RESET_DELAY = 500;
-// How many frames to wait before confirming an apogee
-const DEBOUNCE_COUNT = 3;
+const BACKOFF_FACTOR = 1.2;
+const MAX_BACKOFF_MILLIS = MILLIS_PER_MINUTE*5;
+const MIN_BACKOFF = 100;
 
 /** Handles connection with detector server and interprets the values */
 export default class SwingDetector {
@@ -38,19 +38,43 @@ export default class SwingDetector {
     this.onValue = onValue;
     
     // sensor connection
-    this.ws = new WebSocket('ws://localhost:9000');
-    this.ws.onmessage = (evt) => {
-      const { type, value } = JSON.parse(evt.data);
-      if (type === 'detectorValue') this.handleValue(value);
-      if (type === 'detectorDisplay') this.handleDisplay(value);
-    }
+    this.reconnectionDelay = 0;
+    this.tryConnecting();
 
     this.loop();
   }
 
-  waitConnection() {
-    if (this.ws.readyState === WebSocket.OPEN) return Promise.resolve();
-    else return new Promise(resolve => this.ws.onopen = resolve);
+  async tryConnecting() {
+    if(this.reconnectionDelay > 0) await millis(this.reconnectionDelay);
+    console.log('trying to connect');
+
+    this.ws = new WebSocket('ws://localhost:9000');
+    this.ws.onmessage = this.onMessage.bind(this);
+    this.ws.onopen = this.onConnect.bind(this);
+
+    if (this.reconnectionDelay === 0) this.reconnectionDelay = MIN_BACKOFF;
+    this.reconnectionDelay = Math.min(this.reconnectionDelay * BACKOFF_FACTOR, MAX_BACKOFF_MILLIS);
+    this.ws.onclose = this.tryConnecting.bind(this);
+  }
+
+  onConnect() {
+    console.log('connected');
+    this.reconnectionDelay = 0;
+    if (this.pendingConfig) this.updateConfig(this.pendingConfig);
+    this.pendingConfig = null;
+  }
+
+  onMessage(evt) {
+    let { type, value } = JSON.parse(evt.data);
+    if (type === 'detectorValue') {
+      if (!this.active) return;
+      if (this.swap) value = -value;
+      
+      value = value - this.offset;
+      this.latestValue = value;
+    } else if (type === 'detectorDisplay') {
+      document.querySelector('img.view').src = `data:image/jpeg;base64,${value}`;
+    }
   }
 
   send(data) {
@@ -58,9 +82,6 @@ export default class SwingDetector {
     this.ws.send(JSON.stringify(data));
   }
 
-  handleDisplay(display) {
-    document.querySelector('img.view').src = `data:image/jpeg;base64,${display}`;
-  }
 
   onZoneChange(newZone) {
     this.updateConfig({zone: newZone});
@@ -125,21 +146,18 @@ export default class SwingDetector {
     this.onValue(output);
   }
 
-  handleValue(value) {
-    if (!this.active) return;
-    if (this.swap) value = -value;
-    
-    value = value - this.offset;
-    this.latestValue = value;
-  }
-
   downloadRecording() {
     download(this.recordingName, this.recording, 'text/csv');
     this.record = false;
   }
 
   updateConfig(data) {
-    this.send({ 'action': 'updateConfig', 'payload': data });
+    if (this.connected) {
+      this.send({ 'action': 'updateConfig', 'payload': data });
+    } else {
+      if (!this.pendingConfig) this.pendingConfig = {};
+      this.pendingConfig = Object.assign(this.pendingConfig, data);
+    }
   }
 
   get camera() {
@@ -165,6 +183,9 @@ export default class SwingDetector {
     this._zone = value;
   }
 
+  get connected() {
+    return this.ws.readyState === this.ws.OPEN;
+  }
   async getCameraList() {
     const list = await navigator.mediaDevices.enumerateDevices()
     return list.filter(device => device.kind === 'videoinput').map(device => device.label);

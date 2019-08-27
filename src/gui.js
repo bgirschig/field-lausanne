@@ -1,19 +1,19 @@
 import * as dat from 'dat.gui';
 
-let swingDetector;
-let instrumentRenderer;
+let detector;
+let insruments;
 
-export default async function init(_swingDetector, _instrumentRenderer) {
-  swingDetector = _swingDetector;
-  instrumentRenderer = _instrumentRenderer;
+export default async function init(_detector, _insruments) {
+  detector = _detector;
+  insruments = _insruments;
 
-  const cameras = await swingDetector.getCameraList();
+  const cameras = await detector.getCameraList();
   const cameraMap = {};
   cameras.forEach((label, idx) => cameraMap[label] = idx);
 
   const gui = new dat.GUI();
-  gui.remember(swingDetector);
-  gui.remember(instrumentRenderer);
+  gui.remember(detector);
+  gui.remember(insruments);
   const detectorControls = gui.addFolder('detector');
   const detectorZoneControls = detectorControls.addFolder('zone');
   const recordControls = detectorControls.addFolder('record');
@@ -22,30 +22,30 @@ export default async function init(_swingDetector, _instrumentRenderer) {
   analysisControls.open();
   detectorZoneControls.close();
   recordControls.close();
-  // detectorControls.add(swingDetector, 'camera', cameraMap);
-  detectorControls.add(swingDetector, 'display');
-  detectorZoneControls.add(swingDetector.zone, 'minX', 0, 1);
-  detectorZoneControls.add(swingDetector.zone, 'maxX', 0, 1);
-  detectorZoneControls.add(swingDetector.zone, 'y', 0, 1);
-  detectorZoneControls.add(swingDetector.zone, 'height', 1, 50);
-  recordControls.add(swingDetector, 'record').listen();
-  recordControls.add(swingDetector, 'recordingName');
-  recordControls.add(swingDetector, 'downloadRecording');
-  analysisControls.add(swingDetector, 'active');
-  analysisControls.add(swingDetector, 'swap');
-  analysisControls.add(swingDetector, 'apogeeSpeedTreshold', 0, 0.008).onChange(onControlChange);
-  analysisControls.add(swingDetector, 'inertRange', 0, 0.5).onChange(onControlChange);
-  analysisControls.add(swingDetector, 'resetRange', 0, 0.3).onChange(onControlChange);
-  analysisControls.add(swingDetector, 'offset', -1.0, 1.0).onChange(onControlChange);
-  gui.add(instrumentRenderer, 'active').name('Show Instrument');
+  // detectorControls.add(detector, 'camera', cameraMap);
+  detectorControls.add(detector, 'display');
+  detectorZoneControls.add(detector.zone, 'minX', 0, 1);
+  detectorZoneControls.add(detector.zone, 'maxX', 0, 1);
+  detectorZoneControls.add(detector.zone, 'y', 0, 1);
+  detectorZoneControls.add(detector.zone, 'height', 1, 50);
+  recordControls.add(detector, 'record').listen();
+  recordControls.add(detector, 'recordingName');
+  recordControls.add(detector, 'downloadRecording');
+  analysisControls.add(detector, 'active');
+  analysisControls.add(detector, 'swap');
+  analysisControls.add(detector, 'apogeeSpeedTreshold', 0, 0.008).onChange(onControlChange);
+  analysisControls.add(detector, 'inertRange', 0, 0.5).onChange(onControlChange);
+  analysisControls.add(detector, 'resetRange', 0, 0.3).onChange(onControlChange);
+  analysisControls.add(detector, 'offset', -1.0, 1.0).onChange(onControlChange);
+  gui.add(insruments, 'active').name('Show Instrument');
 
   onControlChange();
 }
 
 function onControlChange() {
-  instrumentRenderer.update({
-    inertRange: swingDetector.inertRange,
-    resetRange: swingDetector.resetRange,
-    apogeeSpeedTreshold: swingDetector.apogeeSpeedTreshold,
+  insruments.update({
+    inertRange: detector.inertRange,
+    resetRange: detector.resetRange,
+    apogeeSpeedTreshold: detector.apogeeSpeedTreshold,
   });
 }

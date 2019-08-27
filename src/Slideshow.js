@@ -1,42 +1,38 @@
-let sources;
-let sourceIdx = 0;
-let diagonal;
-let slideshowWrapper;
-export let transitionValue;
+import scene from './scene.js';
+import { sources } from "./data.js";
+import { randomPick, shuffle } from "./utils/utils";
 
-export function init(_sources) {
-  sources = _sources;
+let sessionSources;
+let sessionIdx;
+let swapped;
 
-  slideshowWrapper = document.querySelector('.slidewhow');
-  diagonal = Math.sqrt(window.innerWidth**2 + window.innerHeight**2) * 0.5;
+function startSession() {
+  sessionIdx = 0;
+  sessionSources = shuffle(randomPick(sources).slice());
+
+  scene.cache(sessionSources);
+  scene.load(sessionSources[sessionIdx++]);
 }
 
-export function next({ autoPlay = true } = {}) {
-  const newItem = document.createElement('img');
-  newItem.src = sources[sourceIdx];
+function onDetectorValue(e) {
+  // We need to update only if 'scene' has an image
+  if (scene.empty) return;
+
+  if (e.direction === 'forward' && e.prevDirection === 'backward') swapped = false;
+  if (swapped) return;
   
-  if (autoPlay) {
-    // const transitionDuration = (parseFloat(getComputedStyle(slideshowWrapper.firstElementChild)['transitionDuration']));
-    const transitionDuration = 0.8;
-    newItem.onload = () => {
-      setTimeout(()=> {
-        newItem.style.setProperty('--ellipse-size', `${diagonal}px`);
-        slideshowWrapper.lastChild.style.transform = "scale(1.2, 1.2)";
-      }, 100);
-    }
-    setTimeout(()=> {
-      if (slideshowWrapper.childCount > 1) {
-        slideshowWrapper.removeChild(slideshowWrapper.firstChild);
-      }
-    }, transitionDuration*1000);
+  if (e.direction === 'forward' || scene.lastImage.transition > 0.8) {
+    scene.lastImage.transition += Math.abs(e.smoothedValue) * 0.2;
   }
-  
-  slideshowWrapper.appendChild(newItem);
 
-  sourceIdx = (sourceIdx + 1) % sources.length;
+  if (scene.lastImage.transition >= 1) {
+    scene.unloadOldest();
+    scene.load(sessionSources[sessionIdx]);
+    sessionIdx = (sessionIdx + 1) % sessionSources.length;
+    swapped = true;
+  }
 }
 
-export function setTransitionValue(val) {
-  transitionValue = val;
-  slideshowWrapper.lastElementChild.style.setProperty('--ellipse-size', `${val * diagonal}px`)
+export default {
+  startSession, onDetectorValue
 }
