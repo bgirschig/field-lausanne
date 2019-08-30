@@ -9,6 +9,11 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: 'bundle.js'
   },
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, 'src/'),
+    },
+  },
   devServer: {
     contentBase: path.join(__dirname, 'dist'),
     compress: true,

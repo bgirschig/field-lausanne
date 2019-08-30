@@ -1,9 +1,9 @@
-import SwingDetector from "./detector";
-import gui from './gui.js';
-import './main.css';
-import instrumentRenderer from "./instruments";
-import slideshow from './slideshow.js';
-import StateMachine from "./utils/StateMachine";
+import SwingDetector from "@/detector";
+import gui from '@/gui.js';
+import '@/main.css';
+import instrumentRenderer from "@/instruments";
+import slideshow from '@/slideshows/field/slideshow';
+import StateMachine from "@/utils/StateMachine";
 
 let state;
 let detector;

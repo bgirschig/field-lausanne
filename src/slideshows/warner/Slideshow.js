@@ -1,24 +1,56 @@
+import { sources } from "@/data.js";
+import { randomPick, shuffle } from "@/utils/utils";
 import * as THREE from 'three';
-import SlideshowImage from "./SlideshowImage.js";
-
-// config
-const NEAR = 0;
-const FAR = 100;
+import SlideshowImage from "./SlideshowImage";
 
 // state
 let images = [];
 let imagesCache = {};
+let sessionSources;
+let sessionIdx;
+let swapped;
+let frameRequest;
 
 // unloadOldest
 let scene = new THREE.Scene();
-let camera = new THREE.OrthographicCamera( -window.innerWidth/2, window.innerWidth/2, window.innerHeight/2, -window.innerHeight/2, NEAR, FAR );
+let camera = new THREE.OrthographicCamera( -window.innerWidth/2, window.innerWidth/2, window.innerHeight/2, -window.innerHeight/2, 0, 100 );
 var renderer = new THREE.WebGLRenderer();
 scene.background = new THREE.Color( 0x999 );
 
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
-function cache(images, clear=false) {
+function destroy() {
+  cancelAnimationFrame(frameRequest);
+}
+
+function startSession() {
+  sessionIdx = 0;
+  sessionSources = shuffle(randomPick(sources).slice());
+
+  preload(sessionSources);
+  setImage(sessionSources[sessionIdx++]);
+}
+
+function onDetectorValue(e) {
+  if (images.length === 0) return;
+
+  if (e.direction === 'forward' && e.prevDirection === 'backward') swapped = false;
+  if (swapped) return;
+  
+  if (e.direction === 'forward' || images[images.length -1].transition > 0.8) {
+    images[images.length -1].transition += Math.abs(e.smoothedValue) * 0.2;
+  }
+
+  if (images[images.length -1].transition >= 1) {
+    unloadOldest();
+    setImage(sessionSources[sessionIdx]);
+    sessionIdx = (sessionIdx + 1) % sessionSources.length;
+    swapped = true;
+  }
+}
+
+function preload(images, clear=false) {
   if (clear) imagesCache = {};
   if (!Array.isArray(images)) images = [images];
   images.forEach(img => {
@@ -26,9 +58,9 @@ function cache(images, clear=false) {
   });
 }
 
-function load(img) {
+function setImage(img) {
   // make sure this img is in the cache
-  cache(img);
+  preload(img);
   
   // load up the image object
   const imageObject = imagesCache[img];
@@ -50,7 +82,7 @@ function unloadOldest(keepOne = true) {
 }
 
 function loop() {
-  requestAnimationFrame(loop);
+  frameRequest = requestAnimationFrame(loop);
   let needsRender = false;
   images.forEach(image => {
     image.update();
@@ -65,21 +97,5 @@ function loop() {
 loop();
 
 export default {
-  load, cache, unloadOldest,
-  get images() {
-    return images;  
-  },
-  get lastImage() {
-    return images[images.length -1];
-  },
-  get empty() {
-    return images.length === 0;
-  },
-  get test() {
-    if (this.lastImage) return this.lastImage.transition;
-    return 0;
-  },
-  set test(val) {
-    if (this.lastImage) this.lastImage.transition = val;
-  }
+  destroy, startSession, onDetectorValue,
 }

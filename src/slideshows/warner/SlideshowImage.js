@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { clamp, smoothStep } from './utils/utils'
+import { clamp, smoothStep } from "@/utils/utils";
 
 const maxScale = 1.5;
 
