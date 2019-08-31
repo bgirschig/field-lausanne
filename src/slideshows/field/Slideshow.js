@@ -8,7 +8,8 @@ import * as THREE from 'three';
 const DEG2RAD = Math.PI / 180;
 
 // config
-const Z_SPACING = 1;
+const Z_SPACING = 0.8;
+const SPREAD = 3;
 
 // state
 let sessionSources;
@@ -27,7 +28,7 @@ function init() {
 
 function startSession() {
   sessionIdx = 0;
-  sessionSources = shuffle(randomPick(sources).slice()).slice(0,3);
+  sessionSources = shuffle(randomPick(sources).slice());
   images = sessionSources.map((src, idx) => {
     const image = new SlideshowImage(src);
     new THREE.Vector3();
@@ -57,9 +58,10 @@ function loop() {
     stage.camera.position.lerp(cameraTarget, 0.05);
     if (stage.camera.position.distanceTo(cameraTarget) < 0.01) next();
     images.forEach(image => {
-      if (image.position.z > stage.camera.position.z) {
-        placeImage(image );
-      };
+      // update alpha and blur animation
+      image.update();
+      // When the camera is past this image, re-position it at the end of the slideshow
+      if (image.position.z > stage.camera.position.z) placeImage(image);
     })
     stage.render();
   }
@@ -67,11 +69,13 @@ function loop() {
 }
 
 function placeImage ( image ) {
+  image.hide();
   image.position.set(
-    Math.random()-0.5,
-    Math.random()-0.5,
+    (Math.random()-0.5) * SPREAD,
+    (Math.random()-0.5) * SPREAD,
     maxZ,
   );
+  image.fadein();
   maxZ -= Z_SPACING;
 }
 
