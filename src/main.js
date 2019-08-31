@@ -18,7 +18,6 @@ async function main() {
   
   detector = new SwingDetector(onValue);
   gui(detector, instrumentRenderer);
-  slideshow.startSession();
 }
 
 function onStateChange(from, to) {

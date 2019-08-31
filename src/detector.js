@@ -27,8 +27,8 @@ export default class SwingDetector {
     this.swap = true;
     this.offset = 0;
     // amplitude state
-    this.max_value = null;
-    this.min_value = null;
+    this.max_value = Number.NEGATIVE_INFINITY;
+    this.min_value = Number.POSITIVE_INFINITY;
     this.amplitude = null;
     // recording config
     this.recording = '';
@@ -107,14 +107,14 @@ export default class SwingDetector {
     const smoothedSpeed = this.speedHistory.average;
     
     this.amplitude;
-    if (speed >  0.0007) {
+    if (speed >  this.inertRange) {
       if (this.min_value) {
         this.amplitude = this.max_value-this.min_value;
         this.min_value = null;
       }
       if (smoothedValue > this.max_value) this.max_value = smoothedValue;
     }
-    if (speed <  -0.0007) {
+    if (speed <  -this.inertRange) {
       if (this.max_value) {
         this.amplitude = this.max_value-this.min_value;
         this.max_value = null;
@@ -123,8 +123,8 @@ export default class SwingDetector {
     }
 
     let direction = 'still';
-    if (smoothedSpeed > 0.0007) direction = 'backward';
-    if (smoothedSpeed < -0.0007) direction = 'forward';
+    if (smoothedSpeed > this.inertRange) direction = 'backward';
+    if (smoothedSpeed < -this.inertRange) direction = 'forward';
     let side = 'center';
     if (smoothedValue > this.inertRange) side = 'back';
     if (smoothedValue < -this.inertRange) side = 'front';
@@ -132,10 +132,13 @@ export default class SwingDetector {
     const output = {
       value: this.latestValue,
       deltaTime,
+      delta,
       speed,
       smoothedValue,
       smoothedSpeed,
       amplitude: this.amplitude,
+      min_value: this.min_value,
+      max_value: this.max_value,
       direction,
       side,
       prevDirection: this.prevDirection,
