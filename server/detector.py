@@ -49,6 +49,9 @@ def detect(config):
   treshold = (maxValue + average) / 2
   clean = np.zeros(width, focus.dtype)
   clean[baseData > treshold] = 255
+  # 'find_peaks' fails when the peak is on the edge. Fix that by setting the edge
+  # values to 0
+  clean[[0,-1]] = 0
   peaks, _ = find_peaks(clean, height=avgDistToAvg, distance=1000, width=10)
 
   # create the display image
