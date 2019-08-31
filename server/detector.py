@@ -13,8 +13,6 @@ def detect(config):
     cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
     return None, None
 
-  frame = cv2.flip(frame, 1)
-
   # extract frame height
   height, width, _ = frame.shape
 
@@ -31,7 +29,9 @@ def detect(config):
   maxY = int(focusY + focusHeight/2)
   focus = frame[minY:maxY,minX:maxX]
   height, width, _ = focus.shape
-  focus = cv2.cvtColor(focus, cv2.COLOR_BGR2GRAY)
+  
+  # 'optimised' version of: cv2.cvtColor(focus, cv2.COLOR_BGR2GRAY)
+  focus = focus[:,:,0]
 
   # We need a 1d array of values for processing. The focus area is a rectangle,
   # so we average the values on the vertical axis.

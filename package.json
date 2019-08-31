@@ -17,6 +17,7 @@
     "webpack": "webpack",
     "serve:front": "webpack-dev-server --mode development --open",
     "serve:back": "cd server && ./start.sh",
+    "profile": "cd server && ./profile.sh",
     "build": "webpack --mode production"
   },
   "devDependencies": {
