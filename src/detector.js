@@ -2,13 +2,22 @@ import RollingArray from "./utils/rollingArray";
 import WatchableObject from "./utils/watchableObject";
 import { download, millis, MILLIS_PER_MINUTE } from "./utils/utils";
 
+// Connetion config
 const BACKOFF_FACTOR = 1.2;
 const MAX_BACKOFF_MILLIS = MILLIS_PER_MINUTE*5;
 const MIN_BACKOFF = 100;
+// sleep config
+const SLEEP_DELAY = 1000;
 
 /** Handles connection with detector server and interprets the values */
 export default class SwingDetector {
   constructor(onValue) {
+    this.onValue = onValue;
+
+    // sensor connection
+    this.reconnectionDelay = 0;
+    this.tryConnecting();
+
     // input config
     this._camera = 0;
     this.zone = new WatchableObject({minX: 0, maxX: 1, height: 10, y: 0.5}, this.onZoneChange.bind(this));
@@ -34,13 +43,9 @@ export default class SwingDetector {
     this.recording = '';
     this.recordingName = 'swing_values.csv';
     this.record = false;
-
-    this.onValue = onValue;
     
-    // sensor connection
-    this.reconnectionDelay = 0;
-    this.tryConnecting();
-
+    this.sleep = true;
+    
     this.loop();
   }
 
@@ -72,6 +77,23 @@ export default class SwingDetector {
       
       value = value - this.offset;
       this.latestValue = value;
+      
+      // Handle sleep cycle: if the swing is idle for a while, slow down the
+      // detection rate and skip analysis (until the swing moves again)
+      const isInert = Math.abs(value) < this.inertRange;
+      if (!isInert) {
+        // wake up as soon as we get a value outside the inert range
+        this.sleep = false;
+        if (this.sleepRequest) {
+          clearTimeout(this.sleepRequest);
+          this.sleepRequest = null;
+        }
+      } else if (!this.sleep && !this.sleepRequest) {
+        this.sleepRequest = setTimeout(()=>{
+          this.sleep = true;
+          this.sleepRequest = null;
+        }, SLEEP_DELAY);
+      }
     } else if (type === 'detectorDisplay') {
       document.querySelector('img.view').src = `data:image/jpeg;base64,${value}`;
     }
@@ -90,7 +112,7 @@ export default class SwingDetector {
   loop() {
     requestAnimationFrame(this.loop.bind(this));
     
-    if (!this.active) return;
+    if (!this.active || this.sleep) return;
     this.valueHistory.append(this.latestValue);
     const smoothedValue = this.valueHistory.average;
 
@@ -192,5 +214,25 @@ export default class SwingDetector {
   async getCameraList() {
     const list = await navigator.mediaDevices.enumerateDevices()
     return list.filter(device => device.kind === 'videoinput').map(device => device.label);
+  }
+
+  get sleep() {
+    return this._sleep;
+  }
+  set sleep(value) {
+    if (this._sleep === value) return;
+    this._sleep = value;
+    console.log('setSleep', value);
+    
+    if (this.sleep) this.updateConfig({framesDelay: 300});
+    else this.updateConfig({framesDelay: 1});
+  }
+  get active() {
+    return this._active;
+  }
+  set active(value) {
+    if (this._active === value) return;
+    this._active = value;
+    this.updateConfig({active: this.active});
   }
 }

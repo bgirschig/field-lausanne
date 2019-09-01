@@ -13,12 +13,14 @@ clients = []
 config = {
   'camera': 0,
   'display': False,
+  'framesDelay': 1,
   'zone': {
     'minX': 0,
     'maxX': 1,
     'y': 0.5,
     'height': 10,
-  }
+  },
+  'active': True,
 }
 
 """
@@ -44,9 +46,6 @@ def receive(data):
   action = data["action"]
   payload = data["payload"]
   if (action == 'updateConfig'):
-    # # Custom config properties
-    # if 'camera' in payload:
-    #   detector.set_camera(payload['camera'])
     # Generic config dict
     for key in payload:
       config[key] = payload[key]
@@ -81,15 +80,15 @@ socket_thread.start()
 # OpenCV loop
 while True:
   try:
-    value, display = detector.detect(config)
-    if value:
-      send({'type': 'detectorValue', 'value': value })
-    if display:
-      send({'type': 'detectorDisplay', 'value': display })
+    if config['active']:
+      value, display = detector.detect(config)
+      if value:
+        send({'type': 'detectorValue', 'value': value })
+      if display:
+        send({'type': 'detectorDisplay', 'value': display })
   except KeyboardInterrupt:
     detector.stop()
     break
-  
-  cv2.waitKey(1)
+  cv2.waitKey(config['framesDelay'])
 
 detector.stop()
