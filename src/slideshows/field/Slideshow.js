@@ -101,10 +101,9 @@ function offsetScene(zOffset) {
 }
 
 function onDetectorValue(e) {
-  
   if (!lock) {
-    if (e.direction === 'forward') transitionPercent += e.delta * 0.6;
-    if (e.direction === 'backward') transitionPercent += e.delta * 1.0;
+    if (e.delta < 0) transitionPercent += e.delta * 0.2;
+    if (e.delta > 0) transitionPercent += e.delta * 1.0;
     transitionPercent = clamp(transitionPercent);
 
     stage.camera.position.lerpVectors(prevCameraPos, nextCameraPos, smoothStep(0, 1, transitionPercent));
@@ -123,8 +122,6 @@ function onDetectorValue(e) {
   return;
 }
 
-init();
-
 export default {
-  startSession, onDetectorValue,
+  init, startSession, onDetectorValue,
 }

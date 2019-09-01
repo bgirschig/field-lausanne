@@ -1,3 +1,4 @@
+const dom = document.querySelector('.instruments');
 const canvas = document.querySelector('.instruments canvas.dials');
 /** @type {CanvasRenderingContext2D} */
 const ctx = canvas.getContext("2d");
@@ -11,7 +12,7 @@ const dialHeight = height/2;
 canvas.width = width;
 canvas.height = height;
 
-let active = true;
+let active = false;
 let state = {};
 
 const exported = {
@@ -21,9 +22,9 @@ const exported = {
   set active(value) {
     active = Boolean(value);
     if (active) {
-      canvas.style.display = '';
+      dom.style.display = '';
     } else {
-      canvas.style.display = 'none';
+      dom.style.display = 'none';
     }
   },
   update(e) {

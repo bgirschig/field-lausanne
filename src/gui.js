@@ -7,9 +7,9 @@ export default async function init(_detector, _insruments) {
   detector = _detector;
   insruments = _insruments;
 
-  const cameras = await detector.getCameraList();
-  const cameraMap = {};
-  cameras.forEach((label, idx) => cameraMap[label] = idx);
+  // const cameras = await detector.getCameraList();
+  // const cameraMap = {};
+  // cameras.forEach((label, idx) => cameraMap[label] = idx);
 
   const gui = new dat.GUI();
   gui.remember(detector);
@@ -38,6 +38,8 @@ export default async function init(_detector, _insruments) {
   analysisControls.add(detector, 'resetRange', 0, 0.3).onChange(onControlChange);
   analysisControls.add(detector, 'offset', -1.0, 1.0).onChange(onControlChange);
   gui.add(insruments, 'active').name('Show Instrument');
+
+  gui.hide();
 
   onControlChange();
 }
