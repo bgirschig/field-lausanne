@@ -33,7 +33,7 @@ export default async function init(_detector, _insruments) {
   recordControls.add(detector, 'downloadRecording');
   analysisControls.add(detector, 'active');
   analysisControls.add(detector, 'swap');
-  analysisControls.add(detector, 'apogeeSpeedTreshold', 0, 0.008).onChange(onControlChange);
+  analysisControls.add(detector, 'speedTreshold', 0, 0.008).onChange(onControlChange);
   analysisControls.add(detector, 'inertRange', 0, 0.5).onChange(onControlChange);
   analysisControls.add(detector, 'resetRange', 0, 0.3).onChange(onControlChange);
   analysisControls.add(detector, 'offset', -1.0, 1.0).onChange(onControlChange);
@@ -48,6 +48,6 @@ function onControlChange() {
   insruments.update({
     inertRange: detector.inertRange,
     resetRange: detector.resetRange,
-    apogeeSpeedTreshold: detector.apogeeSpeedTreshold,
+    speedTreshold: detector.speedTreshold,
   });
 }

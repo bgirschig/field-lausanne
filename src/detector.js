@@ -17,7 +17,7 @@ export default class SwingDetector {
     this.speedHistory = new RollingArray(3);
     this.latestValue = 0;
     // analysis parameters
-    this.apogeeSpeedTreshold = 0.1;
+    this.speedTreshold = 0.1;
     this.inertRange = 0.15;
     this.resetRange = 0.1;
     // Basic detector state
@@ -107,14 +107,14 @@ export default class SwingDetector {
     const smoothedSpeed = this.speedHistory.average;
     
     this.amplitude;
-    if (speed >  this.inertRange) {
+    if (speed >  this.speedTreshold) {
       if (this.min_value) {
         this.amplitude = this.max_value-this.min_value;
         this.min_value = null;
       }
       if (smoothedValue > this.max_value) this.max_value = smoothedValue;
     }
-    if (speed <  -this.inertRange) {
+    if (speed < -this.speedTreshold) {
       if (this.max_value) {
         this.amplitude = this.max_value-this.min_value;
         this.max_value = null;
@@ -123,8 +123,8 @@ export default class SwingDetector {
     }
 
     let direction = 'still';
-    if (smoothedSpeed > this.inertRange) direction = 'backward';
-    if (smoothedSpeed < -this.inertRange) direction = 'forward';
+    if (smoothedSpeed > this.speedTreshold) direction = 'backward';
+    if (smoothedSpeed < -this.speedTreshold) direction = 'forward';
     let side = 'center';
     if (smoothedValue > this.inertRange) side = 'back';
     if (smoothedValue < -this.inertRange) side = 'front';

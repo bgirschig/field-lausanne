@@ -50,7 +50,7 @@ function render() {
   const speedScale = 50;
   ctx.translate(0, height-20);
   ctx.scale(1, -1);
-  drawZone(-state.apogeeSpeedTreshold*speedScale, state.apogeeSpeedTreshold*speedScale, 'green');
+  drawZone(-state.speedTreshold*speedScale, state.speedTreshold*speedScale, 'green');
   // drawNeedle(state.speed*speedScale, 'white');
   drawNeedle(state.smoothedSpeed*speedScale, 'red');
   drawDial();
