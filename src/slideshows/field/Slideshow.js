@@ -8,7 +8,7 @@ import * as THREE from 'three';
 const DEG2RAD = Math.PI / 180;
 
 // config
-const MAX_CAMERA_Z = 1000;
+const MAX_CAMERA_Z = 100;
 // settings
 const Z_SPACING = 0.8;
 const SPREAD = 3;
@@ -60,7 +60,7 @@ function loop() {
   // Visually, the camera is ocnstantly moving forwards. To make avoid
   // overflowing the float coordinates, we move the whole scene back when the
   // camera reaches a certain treshold
-  if (stage.camera.position.z > MAX_CAMERA_Z) offsetScene(-stage.camera.position.z);
+  if (stage.camera.position.z < -MAX_CAMERA_Z) offsetScene(-stage.camera.position.z);
 
   images.forEach(image => {
     // update alpha and blur animation
@@ -96,7 +96,7 @@ function targetImage(image) {
 }
 
 function offsetScene(zOffset) {
-  console.log('offset', zOffset);
+  console.log('offsetScene', zOffset);
   stage.scene.children.forEach(child => child.position.setZ(child.position.z + zOffset));
   stage.camera.position.setZ(stage.camera.position.z + zOffset);
   nextCameraPos.setZ(nextCameraPos.z + zOffset);
