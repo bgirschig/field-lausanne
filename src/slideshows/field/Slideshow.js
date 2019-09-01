@@ -21,6 +21,7 @@ let stage;
 let images;
 const prevCameraPos = new THREE.Vector3();
 const nextCameraPos = new THREE.Vector3();
+const cameraTarget = new THREE.Vector3();
 let maxZ = 0;
 let lock = false;
 let transitionPercent = 0;
@@ -30,6 +31,7 @@ function init() {
   stage.scene.background = new THREE.Color(0xcccccc);
   stage.camera.position.setZ(4);
   prevCameraPos.copy(stage.camera.position);
+  cameraTarget.copy(stage.camera.position);
   startSession();
   loop();
 }
@@ -53,6 +55,8 @@ function loop() {
   requestAnimationFrame(loop);
   if (!images) return;
 
+  stage.camera.position.lerp(cameraTarget, 0.1);
+
   // Visually, the camera is ocnstantly moving forwards. To make avoid
   // overflowing the float coordinates, we move the whole scene back when the
   // camera reaches a certain treshold
@@ -62,7 +66,7 @@ function loop() {
     // update alpha and blur animation
     image.update();
     // When the camera is past this image, re-position it at the end of the slideshow
-    if (image.position.z > stage.camera.position.z) placeImage(image);
+    if (image.position.z > stage.camera.position.z - stage.camera.near) placeImage(image);
   });
 
   stage.render();
@@ -97,6 +101,7 @@ function offsetScene(zOffset) {
   stage.camera.position.setZ(stage.camera.position.z + zOffset);
   nextCameraPos.setZ(nextCameraPos.z + zOffset);
   prevCameraPos.setZ(prevCameraPos.z + zOffset);
+  cameraTarget.setZ(cameraTarget.z + zOffset);
   maxZ -= zOffset;
 }
 
@@ -106,12 +111,12 @@ function onDetectorValue(e) {
     if (e.delta > 0) transitionPercent += e.delta * 1.0;
     transitionPercent = clamp(transitionPercent);
 
-    stage.camera.position.lerpVectors(prevCameraPos, nextCameraPos, smoothStep(0, 1, transitionPercent));
+    cameraTarget.lerpVectors(prevCameraPos, nextCameraPos, smoothStep(0, 1, transitionPercent));
     if (transitionPercent >= 1) {
       transitionPercent = 0;
       sessionIdx = (sessionIdx + 1) % images.length;    
       targetImage(images[sessionIdx]);
-      prevCameraPos.copy(stage.camera.position);
+      prevCameraPos.copy(cameraTarget);
       lock = true;
     }
   }
