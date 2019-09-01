@@ -54,11 +54,11 @@ def detect(config):
   clean[[0,-1]] = 0
   peaks, _ = find_peaks(clean, height=avgDistToAvg, distance=1000, width=10)
 
-  peak = None
+  outputPeak = None
   outputImg = None
   # Only send if the peak count is 1
   if len(peaks == 1):
-    peak = peaks[0] / float(width) - 0.5
+    outputPeak = peaks[0] / float(width) - 0.5
   if config["display"]:
     # create the display image
     display = np.zeros((100, width, 3), focus.dtype)
@@ -68,7 +68,7 @@ def detect(config):
       cv2.line(display, (peak, 0), (peak, 100), (0,0,255), 3)
     retval, buffer = cv2.imencode('.jpg', display)
     outputImg = base64.b64encode(buffer)
-  return peak, outputImg
+  return outputPeak, outputImg
 
 def init():
   # set_camera(0)
