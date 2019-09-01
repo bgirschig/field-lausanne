@@ -11,8 +11,9 @@ const SLEEP_DELAY = 1000;
 
 /** Handles connection with detector server and interprets the values */
 export default class SwingDetector {
-  constructor(onValue) {
+  constructor(onValue, onSleep) {
     this.onValue = onValue;
+    this.onSleep = onSleep;
 
     // sensor connection
     this.reconnectionDelay = 0;
@@ -222,6 +223,7 @@ export default class SwingDetector {
   set sleep(value) {
     if (this._sleep === value) return;
     this._sleep = value;
+    this.onSleep(value);
     console.log('setSleep', value);
     
     if (this.sleep) this.updateConfig({framesDelay: 300});

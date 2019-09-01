@@ -20,7 +20,7 @@ async function main() {
   
   // Wait for the splash screen to be displayed, before initializing everything
   setTimeout(() => {
-    detector = new SwingDetector(onValue);
+    detector = new SwingDetector(onValue, onSleep);
     slideshow.init();
     gui(detector, instrumentRenderer);
   }, 1500);
@@ -29,11 +29,18 @@ async function main() {
 }
 
 function onStateChange(prevMode, currentMode) {
+  if (currentMode === 'swing') slideshow.startSession();
+  if (currentMode === 'idle') slideshow.endSession();
 }
 
 function onValue(e) {
   instrumentRenderer.update(e);
   if (state.matchMode('swing')) slideshow.onDetectorValue(e);
+}
+
+function onSleep(sleep) {
+  if (sleep) state.goto('idle');
+  else state.goto('swing');
 }
 
 main();

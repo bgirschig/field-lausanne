@@ -7,9 +7,9 @@ import * as THREE from 'three';
 // utils
 const DEG2RAD = Math.PI / 180;
 
-// config
+// scene config
 const MAX_CAMERA_Z = 100;
-// settings
+// image placement config
 const Z_SPACING = 0.8;
 const SPREAD = 3;
 const MARGIN = 0.2;
@@ -19,28 +19,37 @@ let sessionSources;
 let sessionIdx;
 let stage;
 let images;
+let inSession;
+let cameraSmoothFactor = 0.1;
 const prevCameraPos = new THREE.Vector3();
 const nextCameraPos = new THREE.Vector3();
 const cameraTarget = new THREE.Vector3();
-let maxZ = 0;
-let lock = false;
-let transitionPercent = 0;
+let maxZ;
+let lock;
+let transitionPercent;
 
 function init() {
   stage = new ThreeScene();
-  stage.scene.background = new THREE.Color(0xcccccc);
-  stage.camera.position.setZ(4);
-  prevCameraPos.copy(stage.camera.position);
-  cameraTarget.copy(stage.camera.position);
-  startSession();
+  stage.scene.background = new THREE.Color(0x222222);
   loop();
 }
 
 function startSession() {
-  sessionIdx = 0;
+  if (inSession) return;
+
+  stage.camera.position.setZ(4);
+  prevCameraPos.copy(stage.camera.position);
+  nextCameraPos.copy(stage.camera.position);
+  cameraTarget.copy(stage.camera.position);
+
   sessionSources = shuffle(randomPick(sources).slice());
-  // sessionSources = sources[0].slice(0,3);
-  images = sessionSources.map((src, idx) => {
+  lock = false;
+  maxZ = 0;
+  sessionIdx = 0;
+  cameraSmoothFactor = 0.1;
+  transitionPercent = 0;
+  if (images) images.forEach(image => stage.scene.remove(image));
+  images = sessionSources.map(src => {
     const image = new SlideshowImage(src);
     new THREE.Vector3();
     placeImage(image);
@@ -48,25 +57,45 @@ function startSession() {
     return image;
   });
   
+  inSession = true;
   targetImage(images[0]);
+}
+
+function endSession() {
+  if (!inSession) return;
+  inSession = false;
+  cameraSmoothFactor = 0.01;
+  cameraTarget.setZ(cameraTarget.z + 4);
+
+  
+  images.forEach(image => {
+    setTimeout(()=>image.smoothDelete(), 1000 + Math.random()*500);
+  });
 }
 
 function loop() {
   requestAnimationFrame(loop);
   if (!images) return;
 
-  stage.camera.position.lerp(cameraTarget, 0.1);
+  stage.camera.position.lerp(cameraTarget, cameraSmoothFactor);
 
-  // Visually, the camera is ocnstantly moving forwards. To make avoid
+  // Visually, the camera is constantly moving forwards. To make avoid
   // overflowing the float coordinates, we move the whole scene back when the
   // camera reaches a certain treshold
   if (stage.camera.position.z < -MAX_CAMERA_Z) offsetScene(-stage.camera.position.z);
 
-  images.forEach(image => {
+  images = images.filter(image => {
     // update alpha and blur animation
     image.update();
+    // delete images if needed
+    if (image.shouldDelete) {
+      stage.scene.remove(image);
+      return false;
+    }
     // When the camera is past this image, re-position it at the end of the slideshow
     if (image.position.z > stage.camera.position.z - stage.camera.near) placeImage(image);
+    
+    return true;
   });
 
   stage.render();
@@ -79,7 +108,7 @@ function placeImage ( image ) {
     (Math.random()-0.5) * SPREAD,
     maxZ,
   );
-  image.fadein();
+  setTimeout(()=>image.fadein(), 500);
   maxZ -= Z_SPACING;
 }
 
@@ -106,27 +135,26 @@ function offsetScene(zOffset) {
 }
 
 function onDetectorValue(e) {
+  if (!inSession) return;
   if (!lock) {
-    if (e.delta < 0) transitionPercent += e.delta * 0.2;
+    if (e.delta < 0) transitionPercent += e.delta * 0.1;
     if (e.delta > 0) transitionPercent += e.delta * 1.0;
     transitionPercent = clamp(transitionPercent);
 
     cameraTarget.lerpVectors(prevCameraPos, nextCameraPos, smoothStep(0, 1, transitionPercent));
     if (transitionPercent >= 1) {
       transitionPercent = 0;
-      sessionIdx = (sessionIdx + 1) % images.length;    
+      sessionIdx = (sessionIdx + 1) % images.length;
       targetImage(images[sessionIdx]);
       prevCameraPos.copy(cameraTarget);
       lock = true;
     }
   }
 
-  if (lock && e.direction === 'forward' && e.prevDirection === 'backward') {
-    lock = false;
-  }
+  if (lock && e.direction === 'forward' && e.prevDirection === 'backward') lock = false;
   return;
 }
 
 export default {
-  init, startSession, onDetectorValue,
+  init, startSession, endSession, onDetectorValue,
 }

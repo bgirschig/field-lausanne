@@ -51,4 +51,11 @@ export default class SlideshowImage extends THREE.Mesh {
     this.targetAlpha = 0;
     this.animate = true;
   }
+  smoothDelete() {
+    this.pendingDeletion = true;
+    this.fadeout();
+  }
+  get shouldDelete() {
+    return this.pendingDeletion && this.material.alpha === 0;
+  }
 }
