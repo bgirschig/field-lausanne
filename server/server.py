@@ -6,6 +6,7 @@ import detector
 import traceback
 import threading
 import cv2
+import time
 
 # global state
 server = None
@@ -89,6 +90,6 @@ while True:
   except KeyboardInterrupt:
     detector.stop()
     break
-  cv2.waitKey(config['framesDelay'])
+  time.sleep(config['framesDelay'] / 1000.0)
 
 detector.stop()

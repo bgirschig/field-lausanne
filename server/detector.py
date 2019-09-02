@@ -72,7 +72,7 @@ def detect(config):
 
 def init():
   # set_camera(0)
-  set_camera('recordings/swing.mov')
+  set_camera('recording.mov')
 
 def set_camera(camera_id):
   global cap

@@ -227,7 +227,7 @@ export default class SwingDetector {
     console.log('setSleep', value);
     
     if (this.sleep) this.updateConfig({framesDelay: 300});
-    else this.updateConfig({framesDelay: 1});
+    else this.updateConfig({framesDelay: 20});
   }
   get active() {
     return this._active;

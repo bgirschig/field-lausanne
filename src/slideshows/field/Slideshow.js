@@ -137,8 +137,8 @@ function offsetScene(zOffset) {
 function onDetectorValue(e) {
   if (!inSession) return;
   if (!lock) {
-    if (e.delta < 0) transitionPercent += e.delta * 0.1;
-    if (e.delta > 0) transitionPercent += e.delta * 1.0;
+    if (e.delta < 0) transitionPercent += e.delta * 0.2;
+    if (e.delta > 0) transitionPercent += e.delta * 1.3;
     transitionPercent = clamp(transitionPercent);
 
     cameraTarget.lerpVectors(prevCameraPos, nextCameraPos, smoothStep(0, 1, transitionPercent));
