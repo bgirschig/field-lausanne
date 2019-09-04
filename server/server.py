@@ -14,7 +14,7 @@ clients = []
 config = {
   'camera': 0,
   'display': False,
-  'framesDelay': 1,
+  'framesDelay': 20,
   'zone': {
     'minX': 0,
     'maxX': 1,
