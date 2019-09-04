@@ -30,7 +30,7 @@ let transitionPercent;
 
 function init() {
   stage = new ThreeScene();
-  stage.scene.background = new THREE.Color(0x222222);
+  stage.scene.background = new THREE.Color(0);
   loop();
 }
 
