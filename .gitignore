@@ -4,3 +4,4 @@ images
 node_modules
 dist
 recordings/
+server/*.mov
