@@ -87,9 +87,9 @@ while True:
         send({'type': 'detectorValue', 'value': value })
       if display:
         send({'type': 'detectorDisplay', 'value': display })
+    time.sleep(config['framesDelay'] / 1000.0)
   except KeyboardInterrupt:
     detector.stop()
     break
-  time.sleep(config['framesDelay'] / 1000.0)
 
 detector.stop()
