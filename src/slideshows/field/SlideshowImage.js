@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import UnlitTextureMaterial from "@/materials/UnlitTextureMaterial";
 
 const MAX_BLUR = 0.5;
-const FADE_SPEED = 33;
+const FADE_SPEED = 60;
 const FADE_LERP_FACTOR = 1/FADE_SPEED;
 
 export default class SlideshowImage extends THREE.Mesh {
@@ -30,6 +30,7 @@ export default class SlideshowImage extends THREE.Mesh {
       this.material.alpha += (this.targetAlpha - this.material.alpha) * FADE_LERP_FACTOR;
       const blurDone = Math.abs(this.targetBlur - this.material.blurSize)  < 0.05;
       const alphaDone = Math.abs(this.targetAlpha - this.material.alpha) < 0.01;
+      
       if (blurDone && alphaDone) {
         this.material.blurSize = this.targetBlur;
         this.material.alpha = this.targetAlpha;

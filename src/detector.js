@@ -7,7 +7,7 @@ const BACKOFF_FACTOR = 1.2;
 const MAX_BACKOFF_MILLIS = MILLIS_PER_MINUTE*5;
 const MIN_BACKOFF = 100;
 // sleep config
-const SLEEP_DELAY = 1000;
+const SLEEP_DELAY = 3000;
 
 /** Handles connection with detector server and interprets the values */
 export default class SwingDetector {

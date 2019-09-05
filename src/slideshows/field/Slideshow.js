@@ -47,6 +47,7 @@ function startSession() {
   sessionIdx = 0;
   cameraSmoothFactor = 0.1;
   transitionPercent = 0;
+  
   if (images) images.forEach(image => stage.scene.remove(image));
   images = sessionSources.map(src => {
     const image = new SlideshowImage(src);
@@ -63,12 +64,12 @@ function startSession() {
 function endSession() {
   if (!inSession) return;
   inSession = false;
-  cameraSmoothFactor = 0.01;
+  cameraSmoothFactor = 0.002;
   cameraTarget.setZ(cameraTarget.z + 4);
 
-  
+
   images.forEach(image => {
-    setTimeout(()=>image.smoothDelete(), 1000 + Math.random()*500);
+    setTimeout(()=>image.smoothDelete(), 2000 + Math.random()*2000);
   });
 }
 
