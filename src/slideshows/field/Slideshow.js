@@ -17,6 +17,7 @@ const MARGIN = 0.2;
 // state
 let sessionSources;
 let sessionIdx;
+let imageIdx;
 let stage;
 let images;
 let inSession;
@@ -30,6 +31,7 @@ let transitionPercent;
 
 function init() {
   stage = new ThreeScene();
+  sessionIdx = 0;
   loop();
 }
 
@@ -41,10 +43,10 @@ function startSession() {
   nextCameraPos.copy(stage.camera.position);
   cameraTarget.copy(stage.camera.position);
 
-  sessionSources = shuffle(randomPick(state.imagesMap).slice());
+  sessionSources = shuffle(state.imagesMap[sessionIdx].slice());
   lock = false;
   maxZ = 0;
-  sessionIdx = 0;
+  imageIdx = 0;
   cameraSmoothFactor = 0.1;
   transitionPercent = 0;
   
@@ -59,6 +61,8 @@ function startSession() {
   
   inSession = true;
   targetImage(images[0]);
+
+  sessionIdx = (sessionIdx + 1) % state.imagesMap.length;
 }
 
 function endSession() {
@@ -144,8 +148,8 @@ function onDetectorValue(e) {
     cameraTarget.lerpVectors(prevCameraPos, nextCameraPos, smoothStep(0, 1, transitionPercent));
     if (transitionPercent >= 1) {
       transitionPercent = 0;
-      sessionIdx = (sessionIdx + 1) % images.length;
-      targetImage(images[sessionIdx]);
+      imageIdx = (imageIdx + 1) % images.length;
+      targetImage(images[imageIdx]);
       prevCameraPos.copy(cameraTarget);
       lock = true;
     }
