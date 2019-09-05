@@ -1,5 +1,5 @@
 import ThreeScene from "@/ThreeScene";
-import { randomPick, shuffle, clamp, smoothStep } from "@/utils/utils";
+import { shuffle, clamp, smoothStep, seconds } from "@/utils/utils";
 import SlideshowImage from "./SlideshowImage";
 import * as THREE from 'three';
 import state from '@/state';
@@ -71,38 +71,43 @@ function endSession() {
   cameraSmoothFactor = 0.002;
   cameraTarget.setZ(cameraTarget.z + 4);
 
-
-  images.forEach(image => {
-    setTimeout(()=>image.smoothDelete(), 2000 + Math.random()*2000);
+  const promises = images.map(async (image) => {
+    await seconds(2);
+    await seconds(Math.random() * 2);
+    await image.fadeout();
+    stage.scene.remove(image);
+    images.splice(images.indexOf(image), 1);
   });
+
+  return Promise.all(promises);
 }
 
 function loop() {
   requestAnimationFrame(loop);
   if (!images) return;
+  let needsRender = false;
 
-  stage.camera.position.lerp(cameraTarget, cameraSmoothFactor);
+  if (Math.abs(stage.camera.position.z - cameraTarget.z) > 0.005) {
+    needsRender = true;
+    stage.camera.position.lerp(cameraTarget, cameraSmoothFactor);
+  }
 
   // Visually, the camera is constantly moving forwards. To make avoid
   // overflowing the float coordinates, we move the whole scene back when the
   // camera reaches a certain treshold
   if (stage.camera.position.z < -MAX_CAMERA_Z) offsetScene(-stage.camera.position.z);
 
-  images = images.filter(image => {
-    // update alpha and blur animation
-    image.update();
-    // delete images if needed
-    if (image.shouldDelete) {
-      stage.scene.remove(image);
-      return false;
-    }
+  images.forEach(image => {
+    if (image.needsRender) needsRender = true;
     // When the camera is past this image, re-position it at the end of the slideshow
-    if (image.position.z > stage.camera.position.z - stage.camera.near) placeImage(image);
-    
-    return true;
+    if (image.position.z > stage.camera.position.z - stage.camera.near) {
+      needsRender = true;
+      placeImage(image);
+    }
+    image.needsRender = false;
   });
 
-  stage.render();
+  if (needsRender) stage.render();
 }
 
 function placeImage ( image ) {
@@ -112,7 +117,7 @@ function placeImage ( image ) {
     (Math.random()-0.5) * SPREAD,
     maxZ,
   );
-  setTimeout(()=>image.fadein(), 500);
+  setTimeout(()=>image.fadein(), Math.random() * 1000);
   maxZ -= Z_SPACING;
 }
 

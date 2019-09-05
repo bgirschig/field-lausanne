@@ -1,9 +1,8 @@
 import * as THREE from 'three';
 import UnlitTextureMaterial from "@/materials/UnlitTextureMaterial";
+import { TweenLite, Power2 } from "gsap";
 
 const MAX_BLUR = 0.5;
-const FADE_SPEED = 60;
-const FADE_LERP_FACTOR = 1/FADE_SPEED;
 
 export default class SlideshowImage extends THREE.Mesh {
   constructor(imgData) {
@@ -11,11 +10,8 @@ export default class SlideshowImage extends THREE.Mesh {
     const material = new UnlitTextureMaterial();
 
     super( geometry, material );
-    this.needsRender = false;
+    this.needsRender = true;
     
-    this.targetBlur = 0;
-    this.targetAlpha = 1;
-
     this.scale.x = imgData.original_ratio;
     const texture = new THREE.TextureLoader().load(imgData.url, () => {
       this.material.update();
@@ -24,33 +20,33 @@ export default class SlideshowImage extends THREE.Mesh {
     material.map = texture;
   }
 
-  update() {
-    if (this.animate) {
-      this.material.blurSize += (this.targetBlur - this.material.blurSize) * FADE_LERP_FACTOR;
-      this.material.alpha += (this.targetAlpha - this.material.alpha) * FADE_LERP_FACTOR;
-      const blurDone = Math.abs(this.targetBlur - this.material.blurSize)  < 0.05;
-      const alphaDone = Math.abs(this.targetAlpha - this.material.alpha) < 0.01;
-      
-      if (blurDone && alphaDone) {
-        this.material.blurSize = this.targetBlur;
-        this.material.alpha = this.targetAlpha;
-        this.animate = false;
-      }
-    }
-  }
   hide() {
     this.material.alpha = 0;
     this.material.blurSize = MAX_BLUR;
   }
   fadein() {
-    this.targetBlur = 0;
-    this.targetAlpha = 1;
-    this.animate = true;
+    if (this.fader) this.fader.kill();
+    return new Promise((resolve) => {
+      this.fader = TweenLite.to(this.material, 1.5, {
+        blurSize: 0,
+        alpha: 1,
+        ease:Power2.easeInOut,
+        onComplete: resolve,
+        onUpdate: ()=> this.needsRender = true,
+      });
+    });
   }
   fadeout() {
-    this.targetBlur = MAX_BLUR;
-    this.targetAlpha = 0;
-    this.animate = true;
+    if (this.fader) this.fader.kill();
+    return new Promise((resolve) => {
+      this.fader = TweenLite.to(this.material, 4, {
+        blurSize: MAX_BLUR,
+        alpha: 0,
+        ease:Power2.easeInOut,
+        onComplete: resolve,
+        onUpdate: ()=> this.needsRender = true,
+      });
+    });
   }
   smoothDelete() {
     this.pendingDeletion = true;
