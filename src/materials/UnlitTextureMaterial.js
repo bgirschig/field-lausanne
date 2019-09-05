@@ -2,14 +2,19 @@ import * as THREE from 'three';
 
 const vertexShader = `
 varying vec2 vUv;
+varying float vDepth;
+
 void main()	{
   vUv = uv;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+  vDepth = gl_Position.z;
 }
 `;
 
 const fragmentShader = `
 varying vec2 vUv;
+varying float vDepth;
+
 uniform sampler2D map;
 uniform float alpha;
 uniform float blurSize;
@@ -34,7 +39,7 @@ void main()	{
   gl_FragColor = sum / SAMPLES / SAMPLES;
 
   // gl_FragColor = texture2D( map, vUv );
-  gl_FragColor.a = alpha;
+  gl_FragColor.a = alpha * smoothstep(0.0, 0.3, vDepth);
 }
 `;
 

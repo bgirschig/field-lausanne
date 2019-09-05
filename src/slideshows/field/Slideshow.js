@@ -11,7 +11,7 @@ const DEG2RAD = Math.PI / 180;
 const MAX_CAMERA_Z = 100;
 // image placement config
 const Z_SPACING = 0.95;
-const SPREAD = 4;
+const SPREAD = 3;
 const MARGIN = 0.2;
 
 // state
