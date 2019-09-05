@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { clamp, smoothStep } from "@/utils/utils";
+import state from "@/state";
 
 const maxScale = 1.5;
 
@@ -36,25 +37,25 @@ export default class SlideshowImage extends THREE.Mesh {
 
   onload(e) {
     const ratio = e.image.width / e.image.height;
-    const screenRatio = window.innerWidth / window.innerHeight;
+    const screenRatio = state.screenWidth / state.screenHeight;
 
     this.material.uniforms.aspect.value = screenRatio;
 
     if (this.fit === 'contain') {
       if (screenRatio > ratio) {
-        this.scale.y = window.innerHeight;
-        this.scale.x = window.innerHeight * ratio;
+        this.scale.y = state.screenHeight;
+        this.scale.x = state.screenHeight * ratio;
       } else {
-        this.scale.x = window.innerWidth;
-        this.scale.y = window.innerWidth / ratio;
+        this.scale.x = state.screenWidth;
+        this.scale.y = state.screenWidth / ratio;
       }
     } else if (this.fit === 'cover') {
       if (screenRatio > ratio) {
-        this.scale.x = window.innerWidth;
-        this.scale.y = window.innerWidth / ratio;
+        this.scale.x = state.screenWidth;
+        this.scale.y = state.screenWidth / ratio;
       } else {
-        this.scale.y = window.innerHeight;
-        this.scale.x = window.innerHeight * ratio;
+        this.scale.y = state.screenHeight;
+        this.scale.x = state.screenHeight * ratio;
       }
     }
     this.needsRender = true;

@@ -16,6 +16,10 @@ html, body {
   top: 0;
   left: 10px;
 }
+.instruments {
+  position: absolute;
+  z-index: 100;
+}
 .instruments .view {
   position: absolute;
   bottom: 0;

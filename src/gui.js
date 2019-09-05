@@ -1,4 +1,5 @@
 import * as dat from 'dat.gui';
+import state from '@/state';
 
 let detector;
 let insruments;
@@ -18,8 +19,10 @@ export default async function init(_detector, _insruments) {
   const detectorZoneControls = detectorControls.addFolder('zone');
   const recordControls = detectorControls.addFolder('record');
   const analysisControls = gui.addFolder('analysis');
-  detectorControls.open();
-  analysisControls.open();
+  const screenControls = gui.addFolder('screen');
+  screenControls.open();
+  detectorControls.close();
+  analysisControls.close();
   detectorZoneControls.close();
   recordControls.close();
   // detectorControls.add(detector, 'camera', cameraMap);
@@ -37,9 +40,14 @@ export default async function init(_detector, _insruments) {
   analysisControls.add(detector, 'inertRange', 0, 0.5).onChange(onControlChange);
   analysisControls.add(detector, 'resetRange', 0, 0.3).onChange(onControlChange);
   analysisControls.add(detector, 'offset', -1.0, 1.0).onChange(onControlChange);
+  screenControls.add(state, 'offsetAspect', -1.1,1.1);
+  screenControls.add(state, 'offsetLeft', -500, 500);
+  screenControls.add(state, 'offsetRight', -500, 500);
+  screenControls.add(state, 'offsetTop', -500, 500);
+  screenControls.add(state, 'offsetBottom', -500, 500);
   gui.add(insruments, 'active').name('Show Instrument');
 
-  gui.hide();
+  // gui.hide();
 
   onControlChange();
 }

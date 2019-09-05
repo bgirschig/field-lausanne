@@ -2,6 +2,7 @@ import { sources } from "@/data.js";
 import { randomPick, shuffle } from "@/utils/utils";
 import * as THREE from 'three';
 import SlideshowImage from "./SlideshowImage";
+import state from "@/state";
 
 // state
 let images = [];
@@ -13,11 +14,10 @@ let frameRequest;
 
 // unloadOldest
 let scene = new THREE.Scene();
-let camera = new THREE.OrthographicCamera( -window.innerWidth/2, window.innerWidth/2, window.innerHeight/2, -window.innerHeight/2, 0, 100 );
+let camera = new THREE.OrthographicCamera( -state.screenWidth/2, state.screenWidth/2, state.screenHeight/2, -state.screenHeight/2, 0, 100 );
 var renderer = new THREE.WebGLRenderer();
 scene.background = new THREE.Color( 0x999 );
 
-renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild( renderer.domElement );
 
 function destroy() {
