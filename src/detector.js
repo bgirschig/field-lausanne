@@ -95,7 +95,7 @@ export default class SwingDetector {
         }, SLEEP_DELAY);
       }
     } else if (type === 'detectorDisplay') {
-      document.querySelector('img.view').src = `data:image/jpeg;base64,${value}`;
+      document.querySelector('.detectorDisplay').src = `data:image/jpeg;base64,${value}`;
     }
   }
 
@@ -198,7 +198,7 @@ export default class SwingDetector {
   }
   set display(value) {
     this._display = value;
-    document.querySelector('img.view').style.display = value ? '' : 'none';
+    document.querySelector('.detectorDisplay').style.display = value ? '' : 'none';
     this.updateConfig({ 'display': value });
   }
   get zone() {
