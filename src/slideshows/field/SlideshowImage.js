@@ -6,7 +6,7 @@ const FADE_SPEED = 60;
 const FADE_LERP_FACTOR = 1/FADE_SPEED;
 
 export default class SlideshowImage extends THREE.Mesh {
-  constructor(src) {
+  constructor(imgData) {
     const geometry = new THREE.PlaneGeometry( 1, 1 );
     const material = new UnlitTextureMaterial();
 
@@ -16,8 +16,8 @@ export default class SlideshowImage extends THREE.Mesh {
     this.targetBlur = 0;
     this.targetAlpha = 1;
 
-    const texture = new THREE.TextureLoader().load(src, texture => {
-      this.scale.x = texture.image.width / texture.image.height;
+    this.scale.x = imgData.original_ratio;
+    const texture = new THREE.TextureLoader().load(imgData.url, () => {
       this.material.update();
       this.needsRender = true;
     });

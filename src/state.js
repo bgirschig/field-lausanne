@@ -19,6 +19,7 @@ const state = new watchableObject({
   get screenHeight() {
     return window.innerHeight - this.offsetBottom - this.offsetTop;
   },
+  imagesMap: [],
   offsetLeft: 10,
   offsetTop: 10,
   offsetRight: 10,

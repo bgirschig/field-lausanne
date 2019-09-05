@@ -1,8 +1,8 @@
-import { sources } from "@/data";
 import ThreeScene from "@/ThreeScene";
 import { randomPick, shuffle, clamp, smoothStep } from "@/utils/utils";
 import SlideshowImage from "./SlideshowImage";
 import * as THREE from 'three';
+import state from '@/state';
 
 // utils
 const DEG2RAD = Math.PI / 180;
@@ -41,7 +41,7 @@ function startSession() {
   nextCameraPos.copy(stage.camera.position);
   cameraTarget.copy(stage.camera.position);
 
-  sessionSources = shuffle(randomPick(sources).slice());
+  sessionSources = shuffle(randomPick(state.imagesMap).slice());
   lock = false;
   maxZ = 0;
   sessionIdx = 0;
@@ -49,8 +49,8 @@ function startSession() {
   transitionPercent = 0;
   
   if (images) images.forEach(image => stage.scene.remove(image));
-  images = sessionSources.map(src => {
-    const image = new SlideshowImage(src);
+  images = sessionSources.map(imgData => {
+    const image = new SlideshowImage(imgData);
     new THREE.Vector3();
     placeImage(image);
     stage.scene.add(image);

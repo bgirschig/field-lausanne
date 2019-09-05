@@ -3,20 +3,26 @@ import gui from '@/gui.js';
 import instrumentRenderer from "@/instruments";
 import slideshow from '@/slideshows/field/slideshow';
 import StateMachine from "@/utils/StateMachine";
+import state from "@/state";
 
 import '@/styles/main.css';
 import '@/styles/splash.css';
 
-let state;
+let stateMahine;
 let detector;
 
 async function main() {
-  state = new StateMachine({
+  stateMahine = new StateMachine({
     modes: ['splash', 'idle', 'swing'],
     onChange: onStateChange,
     logLevel: 'normal',
   });
-  state.goto('splash');
+  
+  const request = await fetch('images/map.json')
+  const imagesMap = await request.json();
+  state.imagesMap = imagesMap;
+
+  stateMahine.goto('splash');
   
   // Wait for the splash screen to be displayed, before initializing everything
   setTimeout(() => {
@@ -25,7 +31,7 @@ async function main() {
     gui(detector, instrumentRenderer);
   }, 1500);
 
-  setTimeout(()=> { state.goto('swing') }, 3000);
+  setTimeout(()=> { stateMahine.goto('swing') }, 3000);
 }
 
 function onStateChange(prevMode, currentMode) {
@@ -35,12 +41,12 @@ function onStateChange(prevMode, currentMode) {
 
 function onValue(e) {
   instrumentRenderer.update(e);
-  if (state.matchMode('swing')) slideshow.onDetectorValue(e);
+  if (stateMahine.matchMode('swing')) slideshow.onDetectorValue(e);
 }
 
 function onSleep(sleep) {
-  if (sleep) state.goto('idle');
-  else state.goto('swing');
+  if (sleep) stateMahine.goto('idle');
+  else stateMahine.goto('swing');
 }
 
 main();
