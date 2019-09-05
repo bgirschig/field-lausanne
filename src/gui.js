@@ -15,12 +15,13 @@ export default async function init(_detector, _insruments) {
   const gui = new dat.GUI();
   gui.remember(detector);
   gui.remember(insruments);
+  gui.remember(state);
   const detectorControls = gui.addFolder('detector');
   const detectorZoneControls = detectorControls.addFolder('zone');
   const recordControls = detectorControls.addFolder('record');
   const analysisControls = gui.addFolder('analysis');
   const screenControls = gui.addFolder('screen');
-  screenControls.open();
+  screenControls.close();
   detectorControls.close();
   analysisControls.close();
   detectorZoneControls.close();
@@ -37,9 +38,8 @@ export default async function init(_detector, _insruments) {
   analysisControls.add(detector, 'active');
   analysisControls.add(detector, 'swap');
   analysisControls.add(detector, 'speedTreshold', 0, 0.008).onChange(onControlChange);
-  analysisControls.add(detector, 'inertRange', 0, 0.5).onChange(onControlChange);
-  analysisControls.add(detector, 'resetRange', 0, 0.3).onChange(onControlChange);
-  analysisControls.add(detector, 'offset', -1.0, 1.0).onChange(onControlChange);
+  analysisControls.add(detector, 'inertRange', 0, 0.5).onChange(onControlChange).step(0.01);
+  analysisControls.add(detector, 'offset', -1.001, 1.001).onChange(onControlChange);
   screenControls.add(state, 'offsetAspect', -1.1,1.1);
   screenControls.add(state, 'offsetLeft', -500, 500);
   screenControls.add(state, 'offsetRight', -500, 500);
@@ -47,7 +47,7 @@ export default async function init(_detector, _insruments) {
   screenControls.add(state, 'offsetBottom', -500, 500);
   gui.add(insruments, 'active').name('Show Instrument');
 
-  // gui.hide();
+  gui.hide();
 
   onControlChange();
 }
@@ -55,7 +55,7 @@ export default async function init(_detector, _insruments) {
 function onControlChange() {
   insruments.update({
     inertRange: detector.inertRange,
-    resetRange: detector.resetRange,
+    // resetRange: detector.resetRange,
     speedTreshold: detector.speedTreshold,
   });
 }

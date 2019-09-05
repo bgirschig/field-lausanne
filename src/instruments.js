@@ -40,7 +40,6 @@ function render() {
   // Position instrument
   ctx.translate(width/2, 10);
   drawZone(-state.inertRange, state.inertRange, 'green');
-  drawZone(-state.resetRange, state.resetRange, 'orange');
   drawNeedle(state.smoothedValue, 'red');
   // drawNeedle(state.value);
   if (state.prevApogeeValue) drawNeedle(state.prevApogeeValue, 'yellow');

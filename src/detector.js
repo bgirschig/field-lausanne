@@ -21,21 +21,20 @@ export default class SwingDetector {
 
     // input config
     this._camera = 0;
-    this.zone = new WatchableObject({minX: 0, maxX: 1, height: 10, y: 0.5}, this.onZoneChange.bind(this));
+    this.zone = new WatchableObject({minX: 0, maxX: 1, height: 10, y: 1.0}, this.onZoneChange.bind(this));
     // Values are smoothed over a few frames (using the average of the last x frames)
     this.valueHistory = new RollingArray(10);
     this.speedHistory = new RollingArray(3);
     this.latestValue = 0;
     // analysis parameters
-    this.speedTreshold = 0.1;
-    this.inertRange = 0.15;
-    this.resetRange = 0.1;
+    this.speedTreshold = 0.0007;
+    this.inertRange = 0.06;
     // Basic detector state
     this.prevValue = 0;
     this.prevTime = null;
     this.active = true;
-    this.swap = true;
-    this.offset = 0;
+    this.swap = false;
+    this.offset = 0.048;
     // amplitude state
     this.max_value = Number.NEGATIVE_INFINITY;
     this.min_value = Number.POSITIVE_INFINITY;
