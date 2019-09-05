@@ -10,8 +10,8 @@ const DEG2RAD = Math.PI / 180;
 // scene config
 const MAX_CAMERA_Z = 100;
 // image placement config
-const Z_SPACING = 0.8;
-const SPREAD = 3;
+const Z_SPACING = 0.95;
+const SPREAD = 4;
 const MARGIN = 0.2;
 
 // state
@@ -125,11 +125,14 @@ function targetImage(image) {
   // Find out the position the camera must reach so that the next image fits in
   // the view
   const imgHeight = 1 + MARGIN;
-  const distance = imgHeight / (2 * Math.tan(stage.camera.fov*DEG2RAD/2));
+  const imgWidth = image.scale.x + MARGIN;
+  const imgRatio = imgWidth / imgHeight;
+  const distanceH = imgHeight / (2 * Math.tan(stage.camera.fov*DEG2RAD/2));
+  const distanceW = distanceH * imgRatio / stage.camera.aspect / (state.offsetAspect + 1);
   nextCameraPos.set(
     image.position.x,
     image.position.y,
-    image.position.z + distance,
+    image.position.z + Math.min(Z_SPACING, Math.max(distanceW, distanceH)),
   );
 }
 

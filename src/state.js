@@ -20,10 +20,10 @@ const state = new watchableObject({
     return window.innerHeight - this.offsetBottom - this.offsetTop;
   },
   imagesMap: [],
-  offsetLeft: 10,
-  offsetTop: 10,
-  offsetRight: 10,
-  offsetBottom: 10,
+  offsetLeft: 0,
+  offsetTop: 0,
+  offsetRight: 0,
+  offsetBottom: 0,
   offsetAspect: -0.265,
   debug: false,
 }, onChange);
