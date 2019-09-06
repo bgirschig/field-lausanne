@@ -45,7 +45,7 @@ def main():
       resizedPixels = (int(width), int(height))
 
       im = im.resize(resizedPixels, resample=Image.LANCZOS)
-      im.save(targetImagePath)
+      im.convert('RGB').save(targetImagePath)
 
       sessionImages.append({
         'url': imageUrl,
