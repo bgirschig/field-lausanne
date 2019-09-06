@@ -39,4 +39,4 @@ serve -p 8080 >> ../log-front.txt 2>&1 &
 
 # launch chrome
 osascript -e 'quit app "Google Chrome"'
-/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --start-fullscreen http://localhost:8080
+/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --app --start-fullscreen http://localhost:8080
