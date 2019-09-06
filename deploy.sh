@@ -1,7 +1,7 @@
 # TARGET_HOST=bgirschig@80.236.31.52 # barbes network
 # TARGET_HOST=bgirschig@192.168.1.218 # la cense network
 
-TARGET_HOST=bgirschig@192.168.0.104 # musée de l'elysée
+TARGET_HOST=bgirschig@192.168.0.100 # musée de l'elysée
 TARGET_DIR=/Users/Shared/field
 
 ssh $TARGET_HOST <<- EOF
@@ -12,13 +12,13 @@ scp ./start.sh $TARGET_HOST:$TARGET_DIR/
 
 # Build and deploy frontend
 yarn run build
-rsync -rltDuvh ./dist/* $TARGET_HOST:$TARGET_DIR/frontend
+rsync -rlDuvh ./dist/* $TARGET_HOST:$TARGET_DIR/frontend
 
 # deploy detector service
 cd ./server
 source ./env/bin/activate
 /usr/local/bin/pip freeze > requirements.txt
-rsync -rltDuvh ./* --exclude env/ --exclude recordings/ $TARGET_HOST:$TARGET_DIR/server
+rsync -rlDuvh ./* --exclude env/ --exclude recordings/ $TARGET_HOST:$TARGET_DIR/server
 deactivate
 
 ssh $TARGET_HOST <<- EOF

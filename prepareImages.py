@@ -1,6 +1,6 @@
 import os
 from os import listdir
-from os.path import isdir, relpath, dirname
+from os.path import isdir, relpath, dirname, splitext
 from os.path import join as joinpath
 from os.path import exists as pathexists
 import json
@@ -26,6 +26,7 @@ def main():
     for image in images:
       imgPath = joinpath(imagesSource, folder, image)
       targetImagePath = joinpath(imagesTarget, folder, image)
+      targetImagePath = splitext(targetImagePath)[0] + ".png"
       imageDir = dirname(targetImagePath)
       imageUrl = relpath(targetImagePath, urlRoot)
 
@@ -55,7 +56,7 @@ def main():
         'height': height,
         'ratio': float(width)/height,
       })
-
+    
     output.append(sessionImages)
 
   with open(joinpath(imagesTarget, 'map.json'), 'w+') as f:
