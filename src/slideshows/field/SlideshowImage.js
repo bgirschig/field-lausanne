@@ -1,8 +1,9 @@
 import * as THREE from 'three';
 import UnlitTextureMaterial from "@/materials/UnlitTextureMaterial";
 import { TweenLite, Power2 } from "gsap";
+import { texturePromise } from "@/utils/three";
 
-const MAX_BLUR = 0.5;
+const MAX_BLUR = 0.2;
 
 export default class SlideshowImage extends THREE.Mesh {
   constructor(imgData) {
@@ -13,11 +14,12 @@ export default class SlideshowImage extends THREE.Mesh {
     this.needsRender = true;
     
     this.scale.x = imgData.original_ratio;
-    const texture = new THREE.TextureLoader().load(imgData.url, () => {
+    this.waitReady = texturePromise(imgData.url)
+    .then((texture)=>{
+      material.map = texture;
       this.material.update();
       this.needsRender = true;
-    });
-    material.map = texture;
+    })
   }
 
   hide() {
@@ -27,10 +29,10 @@ export default class SlideshowImage extends THREE.Mesh {
   fadein() {
     if (this.fader) this.fader.kill();
     return new Promise((resolve) => {
-      this.fader = TweenLite.to(this.material, 1.5, {
+      this.fader = TweenLite.to(this.material, 2.5, {
         blurSize: 0,
         alpha: 1,
-        ease:Power2.easeInOut,
+        ease:Power3.easeIn,
         onComplete: resolve,
         onUpdate: ()=> this.needsRender = true,
       });
@@ -42,7 +44,7 @@ export default class SlideshowImage extends THREE.Mesh {
       this.fader = TweenLite.to(this.material, 4, {
         blurSize: MAX_BLUR,
         alpha: 0,
-        ease:Power2.easeInOut,
+        ease:Power2.easeIn,
         onComplete: resolve,
         onUpdate: ()=> this.needsRender = true,
       });

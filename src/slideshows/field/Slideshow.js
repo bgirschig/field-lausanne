@@ -35,7 +35,7 @@ function init() {
   loop();
 }
 
-function startSession() {
+async function startSession() {
   if (inSession) return;
 
   stage.camera.position.setZ(4);
@@ -51,14 +51,16 @@ function startSession() {
   transitionPercent = 0;
   
   if (images) images.forEach(image => stage.scene.remove(image));
-  images = sessionSources.map(imgData => {
+  const promises = sessionSources.map(async (imgData, index) => {
     const image = new SlideshowImage(imgData);
-    new THREE.Vector3();
-    placeImage(image);
+    await image.waitReady;
+    placeImage(image, index);
     stage.scene.add(image);
     return image;
   });
-  
+  maxZ = -sessionSources.length*Z_SPACING;
+  images = await Promise.all(promises);
+
   inSession = true;
   targetImage(images[0]);
 
@@ -72,9 +74,9 @@ function endSession() {
   cameraTarget.setZ(cameraTarget.z + 4);
 
   const promises = images.map(async (image) => {
-    await seconds(2);
-    await seconds(Math.random() * 2);
-    await image.fadeout();
+    await seconds(2); // wait for the camera to move out
+    await seconds(Math.random() * 2); // spread the images disparition
+    await image.fadeout(); // wait for the image to fade out before deleting it
     stage.scene.remove(image);
     images.splice(images.indexOf(image), 1);
   });
@@ -110,15 +112,14 @@ function loop() {
   if (needsRender) stage.render();
 }
 
-function placeImage ( image ) {
+function placeImage ( image, index ) {
   image.hide();
   image.position.set(
     (Math.random()-0.5) * SPREAD,
     (Math.random()-0.5) * SPREAD,
-    maxZ,
+    -index * Z_SPACING,
   );
   setTimeout(()=>image.fadein(), Math.random() * 1000);
-  maxZ -= Z_SPACING;
 }
 
 function targetImage(image) {
