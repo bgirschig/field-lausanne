@@ -37,7 +37,7 @@ export default async function init(_detector, _insruments) {
   recordControls.add(detector, 'downloadRecording');
   analysisControls.add(detector, 'active');
   analysisControls.add(detector, 'swap');
-  analysisControls.add(detector, 'speedTreshold', 0, 0.008).onChange(onControlChange);
+  analysisControls.add(detector, 'speedTreshold', 0, 0.001).onChange(onControlChange);
   analysisControls.add(detector, 'inertRange', 0, 0.5).onChange(onControlChange).step(0.01);
   analysisControls.add(detector, 'offset', -1.001, 1.001).onChange(onControlChange);
   screenControls.add(state, 'offsetAspect', -1.1,1.1);
