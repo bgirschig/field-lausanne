@@ -35,7 +35,7 @@ function init() {
   loop();
 }
 
-async function startSession() {
+function startSession() {
   if (inSession) return;
 
   stage.camera.position.setZ(4);
@@ -51,16 +51,14 @@ async function startSession() {
   transitionPercent = 0;
   
   if (images) images.forEach(image => stage.scene.remove(image));
-  const promises = sessionSources.map(async (imgData, index) => {
+  images = sessionSources.map(imgData => {
     const image = new SlideshowImage(imgData);
-    await image.waitReady;
-    placeImage(image, index);
+    new THREE.Vector3();
+    placeImage(image);
     stage.scene.add(image);
     return image;
   });
-  maxZ = -sessionSources.length*Z_SPACING;
-  images = await Promise.all(promises);
-
+  
   inSession = true;
   targetImage(images[0]);
 
@@ -112,14 +110,15 @@ function loop() {
   if (needsRender) stage.render();
 }
 
-function placeImage ( image, index ) {
+function placeImage ( image ) {
   image.hide();
   image.position.set(
     (Math.random()-0.5) * SPREAD,
     (Math.random()-0.5) * SPREAD,
-    -index * Z_SPACING,
+    maxZ,
   );
   setTimeout(()=>image.fadein(), Math.random() * 1000);
+  maxZ -= Z_SPACING;
 }
 
 function targetImage(image) {
