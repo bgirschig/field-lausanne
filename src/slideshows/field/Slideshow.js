@@ -15,12 +15,12 @@ const SPREAD = 3;
 const MARGIN = 0.2;
 
 // state
+let mode = 'idle';
 let sessionSources;
 let sessionIdx;
 let imageIdx;
 let stage;
 let images;
-let inSession;
 let cameraSmoothFactor = 0.1;
 const prevCameraPos = new THREE.Vector3();
 const nextCameraPos = new THREE.Vector3();
@@ -36,7 +36,8 @@ function init() {
 }
 
 function startSession() {
-  if (inSession) return;
+  if (['active', 'transition'].includes(mode)) return;
+  console.log('startSession');
 
   stage.camera.position.setZ(4);
   prevCameraPos.copy(stage.camera.position);
@@ -51,6 +52,8 @@ function startSession() {
   transitionPercent = 0;
   
   if (images) images.forEach(image => stage.scene.remove(image));
+  stage.scene.children.forEach(stage.scene.remove);
+  
   images = sessionSources.map(imgData => {
     const image = new SlideshowImage(imgData);
     new THREE.Vector3();
@@ -59,15 +62,16 @@ function startSession() {
     return image;
   });
   
-  inSession = true;
+  mode = 'active';
   targetImage(images[0]);
 
   sessionIdx = (sessionIdx + 1) % state.imagesMap.length;
 }
 
-function endSession() {
-  if (!inSession) return;
-  inSession = false;
+async function endSession() {
+  if (mode !== 'active') return;
+  console.log('endSession');
+
   cameraSmoothFactor = 0.002;
   cameraTarget.setZ(cameraTarget.z + 4);
 
@@ -79,7 +83,15 @@ function endSession() {
     images.splice(images.indexOf(image), 1);
   });
 
-  return Promise.all(promises);
+  mode = 'transition';
+  await Promise.all(promises);
+  mode = 'idle';
+}
+
+async function nextSession() {
+  if (mode !== 'active') return; 
+  await endSession();
+  startSession();
 }
 
 function loop() {
@@ -147,7 +159,7 @@ function offsetScene(zOffset) {
 }
 
 function onDetectorValue(e) {
-  if (!inSession) return;
+  if (mode !== 'active') return;
   if (!lock) {
     if (e.delta < 0) transitionPercent += e.delta * 0.2;
     if (e.delta > 0) transitionPercent += e.delta * 1.3;
@@ -168,5 +180,5 @@ function onDetectorValue(e) {
 }
 
 export default {
-  init, startSession, endSession, onDetectorValue,
+  init, startSession, endSession, nextSession, onDetectorValue,
 }

@@ -20,8 +20,12 @@ async function main() {
   slideshow.init();
   gui(detector, instrumentRenderer);
 
-  await seconds(3);
-  slideshow.startSession;
+  document.addEventListener('keyup', e => {
+    if(e.key === 'ArrowRight') slideshow.nextSession();
+  });
+
+  // await seconds(1);
+  slideshow.startSession();
 }
 
 function onValue(e) {
@@ -29,12 +33,9 @@ function onValue(e) {
   slideshow.onDetectorValue(e);
 }
 
-async function onSleep(sleep) {
-  if (sleep) {
-    await slideshow.endSession();
-    slideshow.startSession();
-  }
-  // else slideshow.startSession();
+function onSleep(sleep) {
+  if (sleep) slideshow.nextSession();
 }
+
 
 main();
