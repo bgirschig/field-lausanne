@@ -1,6 +1,6 @@
 import RollingArray from "./utils/rollingArray";
 import WatchableObject from "./utils/watchableObject";
-import { download, millis, MILLIS_PER_MINUTE } from "./utils/utils";
+import { millis, MILLIS_PER_MINUTE } from "./utils/utils";
 
 // Connetion config
 const BACKOFF_FACTOR = 1.2;
@@ -39,10 +39,6 @@ export default class SwingDetector {
     this.max_value = Number.NEGATIVE_INFINITY;
     this.min_value = Number.POSITIVE_INFINITY;
     this.amplitude = null;
-    // recording config
-    this.recording = '';
-    this.recordingName = 'swing_values.csv';
-    this.record = false;
     
     this.sleep = true;
     
@@ -169,11 +165,6 @@ export default class SwingDetector {
     if (direction != 'still') this.prevDirection = direction;
 
     this.onValue(output);
-  }
-
-  downloadRecording() {
-    download(this.recordingName, this.recording, 'text/csv');
-    this.record = false;
   }
 
   updateConfig(data) {
