@@ -8,18 +8,12 @@ export default async function init(_detector, _insruments) {
   detector = _detector;
   insruments = _insruments;
 
-  // const cameras = await detector.getCameraList();
-  // const cameraMap = {};
-  // cameras.forEach((label, idx) => cameraMap[label] = idx);
-
   const gui = new dat.GUI();
-  gui.remember(detector);
-  gui.remember(insruments);
-  gui.remember(state);
+  
   const detectorControls = gui.addFolder('detector');
-  const detectorZoneControls = detectorControls.addFolder('zone');
   const analysisControls = gui.addFolder('analysis');
   const screenControls = gui.addFolder('screen');
+  const detectorZoneControls = detectorControls.addFolder('zone');
   screenControls.close();
   detectorControls.close();
   analysisControls.close();
