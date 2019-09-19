@@ -11,13 +11,18 @@ const SLEEP_DELAY = 2000;
 
 /** Handles connection with detector server and interprets the values */
 export default class SwingDetector {
-  constructor(onValue, onSleep) {
+  constructor(onValue, onSleep, emulate=false) {
     this.onValue = onValue;
     this.onSleep = onSleep;
+    this.emulate = emulate;
 
     // sensor connection
     this.reconnectionDelay = 0;
-    this.tryConnecting();
+    if (this.emulate) {
+      this.emulateSwing();
+    } else {
+      this.tryConnecting();
+    }
 
     // input config
     this._camera = 0;
@@ -47,6 +52,12 @@ export default class SwingDetector {
     this.loop();
   }
 
+  emulateSwing() {
+    setTimeout(this.emulateSwing.bind(this));
+    const value = Math.sin(performance.now()*0.005)*0.3;
+    this.handleValue(value);
+  }
+
   async tryConnecting() {
     if(this.reconnectionDelay > 0) await millis(this.reconnectionDelay);
     console.log('trying to connect');
@@ -70,30 +81,34 @@ export default class SwingDetector {
   onMessage(evt) {
     let { type, value } = JSON.parse(evt.data);
     if (type === 'detectorValue') {
-      if (!this.active) return;
-      if (this.swap) value = -value;
-      value *= 1.4; // Hack for new camera placement. TODO: fix this
-      value = value - this.offset;
-      this.latestValue = value;
-      
-      // Handle sleep cycle: if the swing is idle for a while, slow down the
-      // detection rate and skip analysis (until the swing moves again)
-      const isInert = Math.abs(value) < this.inertRange;
-      if (!isInert) {
-        // wake up as soon as we get a value outside the inert range
-        this.sleep = false;
-        if (this.sleepRequest) {
-          clearTimeout(this.sleepRequest);
-          this.sleepRequest = null;
-        }
-      } else if (!this.sleep && !this.sleepRequest) {
-        this.sleepRequest = setTimeout(()=>{
-          this.sleep = true;
-          this.sleepRequest = null;
-        }, SLEEP_DELAY);
-      }
+      this.handleValue(value);
     } else if (type === 'detectorDisplay') {
       document.querySelector('.detectorDisplay').src = `data:image/jpeg;base64,${value}`;
+    }
+  }
+
+  handleValue(value) {
+    if (!this.active) return;
+    if (this.swap) value = -value;
+    value *= 1.4; // Hack for new camera placement. TODO: fix this
+    value = value - this.offset;
+    this.latestValue = value;
+    
+    // Handle sleep cycle: if the swing is idle for a while, slow down the
+    // detection rate and skip analysis (until the swing moves again)
+    const isInert = Math.abs(value) < this.inertRange;
+    if (!isInert) {
+      // wake up as soon as we get a value outside the inert range
+      this.sleep = false;
+      if (this.sleepRequest) {
+        clearTimeout(this.sleepRequest);
+        this.sleepRequest = null;
+      }
+    } else if (!this.sleep && !this.sleepRequest) {
+      this.sleepRequest = setTimeout(()=>{
+        this.sleep = true;
+        this.sleepRequest = null;
+      }, SLEEP_DELAY);
     }
   }
 
@@ -202,7 +217,7 @@ export default class SwingDetector {
   }
 
   get connected() {
-    return this.ws.readyState === this.ws.OPEN;
+    return this.ws && this.ws.readyState === this.ws.OPEN;
   }
   async getCameraList() {
     const list = await navigator.mediaDevices.enumerateDevices()

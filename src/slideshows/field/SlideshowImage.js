@@ -13,6 +13,7 @@ export default class SlideshowImage extends THREE.Mesh {
     super( geometry, material );
     this.needsRender = true;
     
+    this.userData.imgData = imgData;
     this.scale.x = imgData.original_ratio;
     this.waitReady = texturePromise(imgData.url)
     .then((texture)=>{

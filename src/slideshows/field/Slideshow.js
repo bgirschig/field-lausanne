@@ -136,6 +136,7 @@ function placeImage ( image ) {
 function targetImage(image) {
   // Find out the position the camera must reach so that the next image fits in
   // the view
+  console.log("target image", image.userData.imgData)
   const imgHeight = 1 + MARGIN;
   const imgWidth = image.scale.x + MARGIN;
   const imgRatio = imgWidth / imgHeight;

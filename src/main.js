@@ -16,7 +16,11 @@ async function main() {
   const imagesMap = await request.json();
   state.imagesMap = imagesMap;
   
-  detector = new SwingDetector(onValue, onSleep);
+  const params = new URLSearchParams(window.location.search);
+  state.debug = params.get('debug') !== null
+  state.emulate = params.get('emulate') !== null
+
+  detector = new SwingDetector(onValue, onSleep, state.emulate);
   slideshow.init();
   gui(detector, instrumentRenderer);
 
