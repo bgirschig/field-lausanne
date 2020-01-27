@@ -17,9 +17,14 @@ export default class ThreeScene {
     this.renderer.render( this.scene, this.camera );
   }
 
+  set background(color=0) {
+    this._background = state.debug ? new THREE.Color(0xff00ff) : new THREE.Color(color);
+    this.updateScreen();
+  }
+
   updateScreen() {
     this.renderer.setSize( state.screenWidth, state.screenHeight );
-    this.scene.background = state.debug ? new THREE.Color(0xff00ff) : new THREE.Color(0);
+    this.scene.background = this._background;
     this.camera.aspect = state.screenRatio * (state.offsetAspect + 1);
     this.camera.updateProjectionMatrix();
 
