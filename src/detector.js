@@ -54,7 +54,7 @@ export default class SwingDetector {
 
   emulateSwing() {
     setTimeout(this.emulateSwing.bind(this));
-    const value = Math.sin(performance.now()*0.005)*0.3;
+    const value = Math.sin(performance.now()*0.003)*0.3;
     this.handleValue(value);
   }
 
