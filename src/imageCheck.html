@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>field webgl image check</title>
+</head>
+<body>
+  <div class="slidewhow"></div>
+
+  <script id="vertexShader" type="x-shader/x-vertex">
+    varying vec2 vUv;
+    varying vec2 screenPos;
+    void main()	{
+      vUv = uv;
+      gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0);
+      screenPos = gl_Position.xy;
+    }
+  </script>
+  <script id="fragmentShader" type="x-shader/x-fragment">
+    varying vec2 vUv;
+    varying vec2 screenPos;
+    uniform float transition;
+    uniform float aspect;
+    uniform float scale;
+    uniform sampler2D map;
+
+    void main()	{
+      vec2 scaledUv = vec2(
+        vUv.x / scale + (scale - 1.0) / (2.0 * scale),
+        vUv.y / scale + (scale - 1.0) / (2.0 * scale)
+      );
+      gl_FragColor = texture2D( map, scaledUv );
+
+      float x = screenPos.x * aspect;
+      float y = screenPos.y;
+
+      float dist = sqrt(x*x + y*y);
+      float diag = sqrt(1.0 + aspect*aspect);
+      float mask = 1.0 - smoothstep(transition-0.0015, transition+0.0015, dist / diag);      
+      gl_FragColor.a = mask;
+
+      // gl_FragColor = vec4(screenPos.x * 0.5 + 0.5, screenPos.y * 0.5 + 0.5, 0.0, 1.0);
+    }
+  </script>
+</body>
+</html>

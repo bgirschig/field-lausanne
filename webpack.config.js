@@ -2,12 +2,15 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
-  entry: './main.js',
+  entry: {
+    experiment: './main.js',
+    imageCheck: './main-imageCheck.js',
+  },
   context: __dirname + "/src",
   mode: 'development',
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: 'bundle.js'
+    filename: '[name].bundle.js',
   },
   resolve: {
     alias: {
@@ -28,5 +31,18 @@ module.exports = {
       },
     ],
   },
-  plugins: [new HtmlWebpackPlugin({ template: 'index.html' })]
+  plugins: [
+    new HtmlWebpackPlugin({
+      hash: true,
+      template: 'index.html',
+      filename: 'index.html',
+      chunks: ['experiment'],
+    }),
+    new HtmlWebpackPlugin({
+      hash: true,
+      template: 'imageCheck.html',
+      filename: 'imageCheck.html',
+      chunks: ['imageCheck'],
+    }),
+  ]
 };
