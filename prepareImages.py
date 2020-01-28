@@ -24,6 +24,9 @@ def main():
     sessionImages = []
     print "processing folder %s (%s)" % (folder, len(images))
     for image in images:
+      print image
+      if image == ".DS_Store":
+        continue
       imgPath = joinpath(imagesSource, folder, image)
       targetImagePath = joinpath(imagesTarget, folder, image)
       targetImagePath = splitext(targetImagePath)[0] + ".png"
