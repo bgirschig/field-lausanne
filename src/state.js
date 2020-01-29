@@ -24,7 +24,7 @@ const state = new watchableObject({
   offsetTop: 0,
   offsetRight: 0,
   offsetBottom: 0,
-  offsetAspect: -0.265,
+  offsetAspect: 0.0366666667,
   debug: false,
   emulate: false,
 }, onChange);

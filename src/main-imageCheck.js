@@ -13,15 +13,28 @@ async function main() {
   const request = await fetch('images/map.json')
   const imagesMap = await request.json();
 
-  state.offsetAspect = 0;
   stage.updateScreen();
   stage.background = 0xcccccc;
   stage.camera.position.setZ(6);
-  console.log(state.screenRatio, state.screenWidth, state.screenHeight);
   
   const sessionPromises = imagesMap.map((sessionInfos, sessionIdx) => {
-    return loadSession(sessionInfos, sessionIdx*1.1);
+    return loadSession(sessionInfos, -sessionIdx*1.1);
   });
+  const testImage = new SlideshowImage({
+    "ratio": 1.0, 
+    "original_height": 300,
+    "url": "images/test.png", 
+    "height": 300, 
+    "width": 300, 
+    "original_width": 300, 
+    "original_ratio": 1,
+  });
+  stage.scene.add(testImage);
+  sessionPromises.push(testImage.waitReady);
+  testImage.position.set(
+    -1, 0, 0,
+  );
+
   await Promise.all(sessionPromises);
 
   stage.render();
