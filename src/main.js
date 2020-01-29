@@ -3,7 +3,7 @@ import gui from '@/gui.js';
 import instrumentRenderer from "@/instruments";
 import slideshow from '@/slideshows/field/slideshow';
 import state from "@/state";
-import { seconds } from "@/utils/utils";
+import { seconds, shuffle } from "@/utils/utils";
 
 
 import '@/styles/main.css';
@@ -14,7 +14,7 @@ let detector;
 async function main() {  
   const request = await fetch('images/map.json')
   const imagesMap = await request.json();
-  state.imagesMap = imagesMap;
+  state.imagesMap = shuffle(imagesMap);
   
   const params = new URLSearchParams(window.location.search);
   state.debug = params.get('debug') !== null
