@@ -40,8 +40,8 @@ export default class SwingDetector {
     this.prevValue = 0;
     this.prevTime = null;
     this.active = true;
-    this.swap = false;
-    this.offset = 0.0457;
+    this.swap = true;
+    this.offset = 0.002;
     // amplitude state
     this.max_value = Number.NEGATIVE_INFINITY;
     this.min_value = Number.POSITIVE_INFINITY;
