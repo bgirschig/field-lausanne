@@ -95,7 +95,7 @@ python-utils==2.3.0
 pytz==2018.5
 pyzmq==16.0.2
 qtconsole==4.3.1
-requests==2.19.1
+requests==2.20.0
 requests-toolbelt==0.9.1
 rsa==4.1
 scandir==1.6
