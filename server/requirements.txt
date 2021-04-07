@@ -7,7 +7,7 @@ backports.functools-lru-cache==1.5
 backports.shutil-get-terminal-size==1.0.0
 backports.weakref==1.0.post1
 bleach==3.3.0
-bottle==0.12.17
+bottle==0.12.19
 CacheControl==0.12.5
 cachetools==2.1.0
 certifi==2017.7.27.1
