@@ -1,8 +1,4 @@
-# Starfield elysee
-Starfield project adaptation for musée de l'élysée: a Swing-controlled Slideshow
+# _Field Lausanne
+Starfield installation for the musée de l'élysée: A Swing-controlled Slideshow of images from the museum's archive
 
-## TODO
-- √ Images appear animation
-- √ load next session directly
-- compute camera distance with width and height
-- √ Don't select session @random: loop through each
+[Project page](https://bastiengirschig.com/item/301)
